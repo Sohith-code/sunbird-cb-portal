@@ -209,6 +209,10 @@ export class AppTocAboutComponent implements OnInit, OnChanges, AfterViewInit, O
     if (this.content && this.content.courseCategory === NsContent.ECourseCategory.CASE_STUDY) {
       this.disableCertificate = true
     }
+
+    if (this.content?.sectorDetails_v1 && typeof this.content?.sectorDetails_v1 === 'string') {
+      this.content.sectorDetails_v1 = JSON.parse(this.content.sectorDetails_v1);
+    }
   }
 
   ngAfterViewInit(): void {

@@ -302,7 +302,7 @@
         </div>
       </div>
 
-      <ng-container *ngIf="resumeData || content?.completionPercentage">
+      <ng-container *ngIf="content?.completionPercentage >= 50">
         <button mat-stroked-button color="accent" type="button" class="rate-button" (click)="openFeedbackDialog(content)">
           <mat-icon class="nodtranslate">star_purple500</mat-icon>
           <ng-container *ngIf="!userRating">

@@ -73,7 +73,7 @@
           [bindingClass]="'rounded mb-2'"></ws-widget-skeleton-loader>
       </ng-container>
 
-      <div color="secondary" class="flex mat-body-2 flex-middle font-bold-imp px-2 cursor-pointer" (click)="openFeedbackDialog()">
+      <div color="secondary" *ngIf="content?.completionPercentage >= 50" class="flex mat-body-2 flex-middle font-bold-imp px-2 cursor-pointer" (click)="openFeedbackDialog()">
         <mat-icon *ngIf="!forPreview"
           class=" icon-margin mat-icon notranslate material-icons mat-icon-no-color mr-2 blue-color">star</mat-icon>
         <ng-container *ngIf="!userRating && !forPreview">
@@ -148,7 +148,7 @@
           [bindingClass]="'rounded mb-2'"></ws-widget-skeleton-loader>
       </ng-container>
 
-      <div color="secondary" class="flex mat-body-2 flex-middle font-bold-imp px-2" (click)="openFeedbackDialog()">
+      <div color="secondary" *ngIf="content?.completionPercentage >= 50" class="flex mat-body-2 flex-middle font-bold-imp px-2" (click)="openFeedbackDialog()">
         <mat-icon
           class=" icon-margin mat-icon notranslate material-icons mat-icon-no-color mr-2 blue-color">star</mat-icon>
         <ng-container *ngIf="!userRating && !forPreview">
