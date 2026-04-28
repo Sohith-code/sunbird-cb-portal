@@ -36,7 +36,7 @@
                 <div class="flex w-full flex-middle" *ngIf="isEventLive && !isEventRecording">
                     <span class="light-font livecss mr-2 no-box-shadow"><span class="dot"></span>
                         {{widgetData?.content?.event?.status}} </span>
-                    <button *ngIf="eventTypes.includes(widgetData?.content?.event?.resourceType)" mat-raised-button type="button"
+                    <button *ngIf="eventTypes?.includes(widgetData?.content?.event?.resourceType)" mat-raised-button type="button"
                         class="ws-mat-primary-background mr-1 no-box-shadow join-event">Join event</button>
                 </div>
                 <div class="flex w-full flex-middle" *ngIf="!isEventLive && isEventRecording">
