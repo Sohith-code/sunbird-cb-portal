@@ -12,6 +12,7 @@ const ENDPOINTS = {
 
 const ENROLLMENT_CACHE_TTL_MS = 4 * 60 * 60 * 1000 // 4 hours
 const HIERARCHY_CACHE_TTL_MS = 1 * 60 * 60 * 1000 // 1 hour
+const RECENT_ENROLLMENT_WINDOW_MS = 10 * 60 * 1000
 const IDB_NAME = 'zoho-form'
 const IDB_STORE = 'enrollment'
 const IDB_HIERARCHY_STORE = 'hierarchy'
@@ -25,6 +26,7 @@ export class ZohoFormService {
   comprehensiveChildrenByIdentifier = new Map<string, any[]>()
   caCourseUnitIds: string[] = []
   enrolledCourseIds = new Set<string>()
+  private hasOnlyIssuedCertificateCourses = false
 
   private allowedFileExtensions = [
     'jpg',
@@ -172,26 +174,26 @@ export class ZohoFormService {
       const hasOrg = !!(empDetails?.departmentName || profileDetails?.personalDetails?.orgId)
       const hasGroup = !!profDetail?.group
       const isVerified = profileStatus === 'verified'
+      const aparCount = courses.filter((c: any) => c?.isApar)?.length
 
       let orgUpdateText: string
       let orgUpdateUrl = profileUrl
       let orgUpdateLabel = 'Update Profile'
-      let aparTitle = 'APAR Training Plan is Visible'
+      let aparTitle = aparCount > 0 ? 'APAR Training Plan is Visible' : 'APAR Training Plan Not Visible'
       let aparText = ''
 
-      if (this.checkIfUserCustodianOrg()) {
-        aparTitle = 'APAR Training Plan Not Visible'
-        aparText = 'You are currently mapped to an incorrect organization. Please raise a transfer request to your correct organization to view APAR training plans.'
+      if (this.checkIfUserCustodianOrg() && aparCount === 0) {
+        aparTitle = aparTitle
+        aparText = ''
         orgUpdateText = 'You are in the wrong organization. Please submit a transfer request to your proper organization. After transfer approval, APAR training plans will be visible.'
-      } else if (!isVerified || !hasGroup || !hasOrg) {
-        aparTitle = 'APAR Training Plan Not Visible'
-        aparText = 'Your profile is not up-to-date. Please update your organization, designation, and group details and contact your nodal officer to approve your profile.'
-        orgUpdateText = 'Your profile is not up-to-date. Please update your profile and talk to your nodal officer to approve the profile.'
+      } else if ((!isVerified || !hasGroup || !hasOrg) && aparCount === 0) {
+        aparTitle = aparTitle
+        aparText = ''
+        orgUpdateText = 'Your profile is not up-to-date. Please update your profile and reach out to your nodal officer to approve the profile.'
       } else {
-        orgUpdateText = `Your profile details are verified, Still not able to view your APAR course assignments? Please raise the support ticket or update the profile details`
+        orgUpdateText = `Still not able to view your APAR course assignments? Please raise the support ticket or update the profile details`
       }
 
-      const aparCount = courses.filter((c: any) => c?.isApar)?.length
       if (!aparText) {
         aparText = aparCount > 0
           ? `We found ${aparCount} APAR course(s) assigned to your account for the current cycle (2025-26). Your training plan is active and visible.`
@@ -203,9 +205,7 @@ export class ZohoFormService {
         text: aparText,
         courses,
         steps: [
-          'Navigate to: My Profile → Training Plan',
           'Ensure you are logged in with ' + (this.userProfileData?.profileDetails?.personalDetails?.primaryEmail || 'your registered email'),
-          'Check that the APAR cycle 2025-26 is selected',
           'If still not visible, clear browser cache and retry',
         ],
         orgUpdateText,
@@ -218,7 +218,10 @@ export class ZohoFormService {
   }
 
   checkIfUserCustodianOrg(): boolean {
-    return this.custodianOrgId === (this.userProfileData?.profileDetails?.personalDetails?.orgId || '')
+    if (!this.custodianOrgId || !this.userProfileData || !this.userProfileData?.ministryOrStateId) {
+      return false
+    }
+    return this.custodianOrgId === (this.userProfileData?.ministryOrStateId || '')
   }
 
   private renderAparBlock(data: any): void {
@@ -241,8 +244,31 @@ export class ZohoFormService {
       textEl.textContent = data.text
     }
 
+    const isTrainingPlanNotVisible = String(data?.title || '').toLowerCase().includes('not visible')
+    aparVisibleBlock.classList.toggle('apar-theme-not-visible', isTrainingPlanNotVisible)
+    aparVisibleBlock.classList.toggle('apar-theme-visible', !isTrainingPlanNotVisible)
+
     if (Array.isArray(data.courses) && tbodyEl) {
       const count = data.courses.length
+      const tableHead = aparVisibleBlock.querySelector('.apar-courses-head') as HTMLElement | null
+      const tableBody = aparVisibleBlock.querySelector('.apar-courses-body') as HTMLElement | null
+
+      if (count === 0) {
+        if (labelEl) {
+          labelEl.textContent = ''
+          labelEl.style.display = 'none'
+        }
+        if (tableHead) tableHead.style.display = 'none'
+        if (tableBody) tableBody.style.display = 'none'
+        tbodyEl.innerHTML = ''
+      } else {
+        if (labelEl) {
+          labelEl.style.display = ''
+        }
+        if (tableHead) tableHead.style.display = ''
+        if (tableBody) tableBody.style.display = ''
+      }
+
       if (labelEl) {
         labelEl.textContent = `View ${count} Assigned Course${count === 1 ? '' : 's'}`
       }
@@ -262,8 +288,6 @@ export class ZohoFormService {
           </tr>`
         })
         .join('')
-      const tableHead = aparVisibleBlock.querySelector('.apar-courses-head')
-      const tableBody = aparVisibleBlock.querySelector('.apar-courses-body')
       if (tableHead) tableHead.classList.remove('expanded')
       if (tableBody) tableBody.classList.remove('expanded')
     }
@@ -347,29 +371,38 @@ export class ZohoFormService {
 
   private getEnrolledCourseIdsFromList(courses: any[]): Set<string> {
     const ids = (courses || [])
-      .map((item: any) => item?.identifier || item?.content?.identifier || item?.courseId)
+      .map((item: any) => this.getNormalizedIdentifier(item?.identifier || item?.content?.identifier || item?.courseId))
       .filter((id: string) => !!id)
     return new Set(ids)
   }
 
-  private logEnrollmentCourses(statusLabel: string, courses: any[]): void {
-    console.log(`[ZohoFormService] ${statusLabel} enrollment courses`, (courses || []).map((item: any) => ({
-      identifier: item?.identifier || item?.content?.identifier || item?.courseId || '',
-      name: item?.name || item?.content?.name || 'Untitled Course',
-      progress: Number(item?.completionPercentage ?? item?.completion_percentage ?? item?.progress ?? 0),
-      status: item?.status || item?.contentStatus || statusLabel,
-    })))
+  private getNormalizedIdentifier(identifier: any): string {
+    return String(identifier || '').trim().toLowerCase()
   }
 
-  private mergeUniqueEnrollmentCourses(...courseLists: any[][]): any[] {
-    const mergedCourses = ([] as any[]).concat(...courseLists)
-    return mergedCourses.filter((course: any, index: number, self: any[]) => {
-      const identifier = course?.identifier || course?.content?.identifier || course?.courseId || ''
-      return !!identifier && index === self.findIndex((item: any) => {
-        const itemIdentifier = item?.identifier || item?.content?.identifier || item?.courseId || ''
-        return itemIdentifier === identifier
+  private parseCaIdentifiers(data: any): string[] {
+    let parsedValue = data
+
+    if (typeof parsedValue === 'string') {
+      try {
+        parsedValue = JSON.parse(parsedValue)
+      } catch {
+        parsedValue = []
+      }
+    }
+
+    if (!Array.isArray(parsedValue)) {
+      return []
+    }
+
+    return parsedValue
+      .map((item: any) => {
+        if (typeof item === 'string') {
+          return item.trim()
+        }
+        return String(item?.identifier || item?.content?.identifier || item?.courseId || '').trim()
       })
-    })
+      .filter((identifier: string) => !!identifier)
   }
 
   private fetchEnrollmentCourses(userId: string, status: 'Completed' | 'In-Progress'): Promise<any[] | null> {
@@ -377,7 +410,7 @@ export class ZohoFormService {
       request: {
         retiredCoursesEnabled: true,
         status,
-        limit: 50,
+        limit: 100,
       },
     }
     const url = `${ENDPOINTS.ENROLLMENT_API_BASE}${userId}`
@@ -386,7 +419,6 @@ export class ZohoFormService {
       this.http.post(url, requestPayload).subscribe(
         (res: any) => {
           const courses = res?.result?.courses || []
-          this.logEnrollmentCourses(status, courses)
           resolve(courses)
         },
         () => resolve(null),
@@ -394,37 +426,35 @@ export class ZohoFormService {
     })
   }
 
-  private getMergedEnrollmentCourses(userId: string): Promise<any[]> {
-    return Promise.all([
-      this.getEnrollmentCache(userId, 'completed'),
-      this.getEnrollmentCache(userId, 'inprogress'),
-    ])
-      .then(([completedCached, inProgressCached]) => {
-        if (completedCached !== null && inProgressCached !== null) {
-          return this.mergeUniqueEnrollmentCourses(completedCached, inProgressCached)
+  private getCompletedEnrollmentCourses(userId: string): Promise<any[]> {
+    return this.getEnrollmentCache(userId, 'completed')
+      .then(completedCached => {
+        if (completedCached !== null) {
+          return completedCached
         }
+        return this.fetchEnrollmentCourses(userId, 'Completed').then(courses => {
+          const completedCourses = courses || []
+          if (courses !== null) {
+            this.setEnrollmentCache(userId, completedCourses, 'completed')
+          }
+          return completedCourses
+        })
+      })
+      .catch(() => [])
+  }
 
-        return Promise.all([
-          completedCached !== null
-            ? Promise.resolve(completedCached)
-            : this.fetchEnrollmentCourses(userId, 'Completed').then(courses => {
-              const completedCourses = courses || []
-              if (courses !== null) {
-                this.setEnrollmentCache(userId, completedCourses, 'completed')
-              }
-              return completedCourses
-            }),
-          inProgressCached !== null
-            ? Promise.resolve(inProgressCached)
-            : this.fetchEnrollmentCourses(userId, 'In-Progress').then(courses => {
-              const inProgressCourses = courses || []
-              if (courses !== null) {
-                this.setEnrollmentCache(userId, inProgressCourses, 'inprogress')
-              }
-              return inProgressCourses
-            }),
-        ]).then(([completedCourses, inProgressCourses]) => {
-          return this.mergeUniqueEnrollmentCourses(completedCourses, inProgressCourses)
+  private getInprogressEnrollmentCourses(userId: string): Promise<any[]> {
+    return this.getEnrollmentCache(userId, 'inprogress')
+      .then(inprogressCached => {
+        if (inprogressCached !== null) {
+          return inprogressCached
+        }
+        return this.fetchEnrollmentCourses(userId, 'In-Progress').then(courses => {
+          const inprogressCourses = courses || []
+          if (courses !== null) {
+            this.setEnrollmentCache(userId, inprogressCourses, 'inprogress')
+          }
+          return inprogressCourses
         })
       })
       .catch(() => [])
@@ -437,16 +467,17 @@ export class ZohoFormService {
     select.innerHTML = '<option value="">Choose from enrolled courses…</option>'
     this.certificateCourses.forEach((course, index) => {
       const option = document.createElement('option')
-      const statusLabel = course.status === 'completed' ? 'Completed' : 'In Progress'
       option.value = String(index)
-      option.textContent = `${course.name} (${statusLabel} · ${course.progress}%)`
+      option.textContent = `${course.name} (Completed · ${course.progress}%)`
       select.appendChild(option)
     })
 
     if (!this.certificateCourses.length) {
       const option = document.createElement('option')
       option.value = ''
-      option.textContent = 'No enrolled courses found'
+      option.textContent = this.hasOnlyIssuedCertificateCourses
+        ? 'All completed contents already have certificates'
+        : 'No enrolled courses found'
       select.appendChild(option)
     }
   }
@@ -468,6 +499,22 @@ export class ZohoFormService {
       req.onsuccess = (e: any) => resolve(e.target.result)
       req.onerror = () => reject(req.error)
     })
+  }
+
+  private getCaIdentifiers(): Promise<string[]> {
+    return this.openEnrollmentCache()
+      .then(db => {
+        return new Promise<string[]>((resolve, reject) => {
+          const req = db
+            .transaction(IDB_STORE, 'readonly')
+            .objectStore(IDB_STORE)
+            .get('comprehensiveAssessmentIdentifiers')
+
+          req.onsuccess = () => resolve(this.parseCaIdentifiers(req.result?.data))
+          req.onerror = () => reject(req.error)
+        })
+      })
+      .catch(() => [])
   }
 
   private getHierarchyCache(courseId: string): Promise<any[] | null> {
@@ -535,6 +582,19 @@ export class ZohoFormService {
     }
   }
 
+  private clearTimeCheckValue(key: string): void {
+    try {
+      const saved = localStorage.getItem('timeCheck')
+      const parsed = saved ? JSON.parse(saved) : {}
+      if (parsed && Object.prototype.hasOwnProperty.call(parsed, key)) {
+        delete parsed[key]
+        localStorage.setItem('timeCheck', JSON.stringify(parsed))
+      }
+    } catch {
+      // silently ignore cache clear failures
+    }
+  }
+
   private getEnrollmentCache(userId: string, listType: 'completed' | 'inprogress'): Promise<any[] | null> {
     const timeCheckKey = this.getEnrollmentTimeCheckKey(listType)
     const lastUpdated = this.getTimeCheckValue(timeCheckKey)
@@ -569,6 +629,74 @@ export class ZohoFormService {
         this.setTimeCheckValue(timeCheckKey)
       })
       .catch(() => { /* silently ignore cache write failures */ })
+  }
+
+  private getMatchedEnrollment(courses: any[], collectionId: string): any | null {
+    if (!Array.isArray(courses) || !collectionId) {
+      return null
+    }
+
+    return courses.find((course: any) => {
+      const identifier = course?.content?.identifier || course?.identifier || course?.courseId || ''
+      return identifier === collectionId
+    }) || null
+  }
+
+  isRecentEnrollmentAccess(courses: any[], collectionId: string): boolean {
+    const matchedCourse = this.getMatchedEnrollment(courses, collectionId)
+    const lastContentAccessTime = matchedCourse?.lastContentAccessTime
+    if (!lastContentAccessTime) {
+      return true
+    }
+
+    const accessTime = new Date(lastContentAccessTime).getTime()
+    if (Number.isNaN(accessTime)) {
+      return false
+    }
+
+    return (Date.now() - accessTime) < RECENT_ENROLLMENT_WINDOW_MS
+  }
+
+  async clearEnrollmentCacheForUser(userId: string): Promise<void> {
+    if (!userId) {
+      return Promise.resolve()
+    }
+
+    this.clearTimeCheckValue(this.getEnrollmentTimeCheckKey('completed'))
+    this.clearTimeCheckValue(this.getEnrollmentTimeCheckKey('inprogress'))
+
+    const completedStoreKey = this.getEnrollmentStoreKey(userId, 'completed')
+    const inprogressStoreKey = this.getEnrollmentStoreKey(userId, 'inprogress')
+
+    return await this.openEnrollmentCache()
+      .then(db => new Promise<void>(resolve => {
+        const store = db.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE)
+        const completedReq = store.delete(completedStoreKey)
+        const inprogressReq = store.delete(inprogressStoreKey)
+
+        let pending = 2
+        const finalize = () => {
+          pending -= 1
+          if (pending === 0) {
+            resolve()
+          }
+        }
+
+        completedReq.onsuccess = finalize
+        completedReq.onerror = finalize
+        inprogressReq.onsuccess = finalize
+        inprogressReq.onerror = finalize
+      }))
+      .catch(() => Promise.resolve())
+  }
+
+  clearEnrollmentCacheIfRecentAccess(userId: string, courses: any[], collectionId: string): boolean {
+    if (!userId || !this.isRecentEnrollmentAccess(courses, collectionId)) {
+      return false
+    }
+
+    this.clearEnrollmentCacheForUser(userId)
+    return true
   }
 
   // ===== Course loading =====
@@ -606,18 +734,21 @@ export class ZohoFormService {
 
     const userId = this.userProfileData?.userId || this.userProfileData?.profileDetails?.userId
     if (!userId) {
+      this.hasOnlyIssuedCertificateCourses = false
       this.certificateCourses = []
       this.populateCertificateCourseSelect()
       if (select) select.disabled = false
       return
     }
 
-    this.getMergedEnrollmentCourses(userId).then(courses => {
-      this.logEnrollmentCourses('Certificate flow (completed + in-progress merged)', courses)
-      this.certificateCourses = this.mapEnrollmentCourses(courses)
+    this.getCompletedEnrollmentCourses(userId).then(courses => {
+      const mappedCourses = this.mapEnrollmentCourses(courses)
+      this.certificateCourses = mappedCourses.filter(c => !c.hasCertificate)
+      this.hasOnlyIssuedCertificateCourses = mappedCourses.length > 0 && this.certificateCourses.length === 0
       this.populateCertificateCourseSelect()
       if (select) select.disabled = false
     }).catch(() => {
+      this.hasOnlyIssuedCertificateCourses = false
       this.certificateCourses = []
       this.populateCertificateCourseSelect()
       if (select) select.disabled = false
@@ -774,72 +905,79 @@ export class ZohoFormService {
     const select = document.getElementById('comprehensive-course-select') as HTMLSelectElement
     const baseUrl = window.location.origin
 
-    try {
-      const rawIdentifiers = localStorage.getItem('comprehensiveAssessmentIdentifiers')
-      const parsedIdentifiers = rawIdentifiers ? JSON.parse(rawIdentifiers) : []
-      this.caCourseUnitIds = Array.isArray(parsedIdentifiers)
-        ? parsedIdentifiers
-          .map((item: any) => typeof item === 'string' ? item : item?.identifier || item?.content?.identifier || item?.courseId || '')
-          .filter((id: string) => !!id)
-        : []
+    if (select) {
+      select.innerHTML = '<option value="">Loading assessment programs...</option>'
+      select.disabled = true
+    }
 
-      const userId = this.userProfileData?.userId || this.userProfileData?.profileDetails?.userId
+    const userId = this.userProfileData?.userId || this.userProfileData?.profileDetails?.userId
 
-      debugger
-      const finalizeComprehensiveCourses = (enrollmentCourses: any[] = []) => {
-        const enrolledIds = this.getEnrolledCourseIdsFromList(enrollmentCourses)
-        const enrollmentById = new Map<string, any>()
+    const finalizeComprehensiveCourses = (enrollmentCourses: any[] = []) => {
+      const enrolledIds = this.getEnrolledCourseIdsFromList(enrollmentCourses)
+      const enrollmentById = new Map<string, any>()
 
-          ; (enrollmentCourses || []).forEach((course: any) => {
-            const identifier = course?.content?.identifier || course?.identifier || course?.courseId || ''
-            if (identifier) {
-              enrollmentById.set(identifier, course)
-            }
-          })
-        const matchedIdentifiers = this.caCourseUnitIds.filter((identifier: string) => enrolledIds.has(identifier))
-        this.enrolledCourseIds = new Set<string>(matchedIdentifiers)
-
-        this.comprehensiveCourses = matchedIdentifiers.map((identifier: string) => {
-          const course = enrollmentById.get(identifier) || {}
-          const progress = Number(course?.completionPercentage ?? course?.completion_percentage ?? course?.progress ?? 0)
-          const status = this.normalizeStatus(course?.status, progress)
-          return {
-            name: course?.content?.name || course?.name || identifier || 'Untitled Program',
-            completionDate: `${status === 'completed' ? 'Completed' : 'In Progress'} · ${progress}%`,
-            identifier,
-            status,
-            progress,
-            category: 'Comprehensive Assessment Program',
-            assessmentUrl: `${baseUrl}/app/toc/${encodeURIComponent(identifier)}/overview`,
-            children: this.getComprehensiveChildren({ identifier }),
+        ; (enrollmentCourses || []).forEach((course: any) => {
+          const identifier = course?.content?.identifier || course?.identifier || course?.courseId || ''
+          const normalizedIdentifier = this.getNormalizedIdentifier(identifier)
+          if (identifier) {
+            enrollmentById.set(normalizedIdentifier, course)
           }
         })
-        this.populateComprehensiveCourseSelect()
-        if (select) select.disabled = false
-      }
+      const matchedIdentifiers = this.caCourseUnitIds
+        .map((identifier: string) => {
+          const normalizedIdentifier = this.getNormalizedIdentifier(identifier)
+          if (!normalizedIdentifier || !enrolledIds.has(normalizedIdentifier)) {
+            return ''
+          }
+          const enrolledCourse = enrollmentById.get(normalizedIdentifier)
+          return enrolledCourse?.content?.identifier || enrolledCourse?.identifier || enrolledCourse?.courseId || identifier
+        })
+        .filter((identifier: string) => !!identifier)
+      this.enrolledCourseIds = new Set<string>(matchedIdentifiers)
 
-      if (!userId) {
-        this.enrolledCourseIds = new Set<string>()
-        this.comprehensiveChildrenByIdentifier.clear()
-        finalizeComprehensiveCourses([])
-        return
-      }
+      this.comprehensiveCourses = matchedIdentifiers.map((identifier: string) => {
+        const course = enrollmentById.get(this.getNormalizedIdentifier(identifier)) || {}
+        const progress = Number(course?.completionPercentage ?? course?.completion_percentage ?? course?.progress ?? 0)
+        const status = this.normalizeStatus(course?.status, progress)
+        return {
+          name: course?.content?.name || course?.name || identifier || 'Untitled Program',
+          completionDate: `${status === 'completed' ? 'Completed' : 'In Progress'} · ${progress}%`,
+          identifier,
+          status,
+          progress,
+          category: 'Comprehensive Assessment Program',
+          assessmentUrl: `${baseUrl}/app/toc/${encodeURIComponent(identifier)}/overview`,
+          children: this.getComprehensiveChildren({ identifier }),
+        }
+      })
+      this.populateComprehensiveCourseSelect()
+      if (select) select.disabled = false
+    }
 
-      this.getMergedEnrollmentCourses(userId).then(courses => {
-        this.logEnrollmentCourses('Comprehensive flow (enrolled identifiers only)', courses)
-        finalizeComprehensiveCourses(courses)
-      }).catch(() => {
+    this.getCaIdentifiers()
+      .then((parsedIdentifiers: string[]) => {
+        this.caCourseUnitIds = parsedIdentifiers
+
+        if (!userId) {
+          this.enrolledCourseIds = new Set<string>()
+          this.comprehensiveChildrenByIdentifier.clear()
+          finalizeComprehensiveCourses([])
+          return
+        }
+
+        this.getInprogressEnrollmentCourses(userId).then(courses => {
+          finalizeComprehensiveCourses(courses)
+        }).catch(() => {
+          this.comprehensiveCourses = []
+          this.populateComprehensiveCourseSelect()
+          if (select) select.disabled = false
+        })
+      })
+      .catch(() => {
         this.comprehensiveCourses = []
         this.populateComprehensiveCourseSelect()
         if (select) select.disabled = false
       })
-      return
-    } catch {
-      this.comprehensiveCourses = []
-    }
-
-    this.populateComprehensiveCourseSelect()
-    if (select) select.disabled = false
   }
 
   private populateComprehensiveCourseSelect(): void {

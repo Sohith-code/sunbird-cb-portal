@@ -11,6 +11,7 @@ import { CourseCompletionDialogComponent } from '../course-completion-dialog/cou
 import { PdfScormDataService } from '../../pdf-scorm-data-service'
 import { AppTocService, ViewerDataService } from '@sunbird-cb/toc'
 import { WidgetContentLibService } from '@sunbird-cb/consumption'
+import { ZohoFormService } from '../../../../../../../src/app/header/header/zoho-form.service'
 // import { WidgetContentService as WidgetContentServiceUtils } from '@sunbird-cb/utils-v2'
 
 @Component({
@@ -86,6 +87,7 @@ export class ViewerSecondaryTopBarComponent implements OnInit, OnDestroy, AfterV
     private appTocSvc: AppTocService,
     private widgetLibSvc: WidgetContentLibService,
     private cdr: ChangeDetectorRef,
+    private zohoFormService: ZohoFormService,
     // private contentSvc: WidgetContentServiceUtils
 
   ) {
@@ -513,6 +515,7 @@ export class ViewerSecondaryTopBarComponent implements OnInit, OnDestroy, AfterV
             const lastIndexData = this.contentProgressHash?.length && this.contentProgressHash[this.contentProgressHash?.length - 1]
             if (lastIndexData && lastIndexData?.completionPercentage === 100 && lastIndexData?.status === 2 && lastIndexData?.contentId === this.resourceId) {
               this.generateCertificate()
+              this.zohoFormService.clearEnrollmentCacheForUser(this.userid)
             }
 
             // Check if this is a Learning Pathway
