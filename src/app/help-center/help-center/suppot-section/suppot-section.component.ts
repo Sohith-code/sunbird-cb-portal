@@ -154,6 +154,18 @@ export class SuppotSectionComponent implements OnInit, OnChanges {
       (window as any).zsResetWebForm = (id: string) => { this.zohoFormService.resetForm(id); return true }
       (window as any).zsValidateMandatoryFields = () => { return this.zohoFormService.validateAndSubmitForm() }
       (window as any).zsGetAttachedFilesCount = () => { return this.zohoFormService.getAttachedFilesCount() }
+      (window as any).handleCertificateCourseSelect = () => { this.zohoFormService.handleCertificateCourseSelect(); return true }
+        ; (window as any).handleComprehensiveCourseSelect = () => { this.zohoFormService.handleComprehensiveCourseSelect(); return true }
+        ; (window as any).toggleComprehensiveChildTable = (btn: HTMLElement) => {
+          btn.classList.toggle('expanded')
+          const body = btn.nextElementSibling as HTMLElement
+          if (body) body.classList.toggle('expanded')
+        }
+        ; (window as any).toggleAparCourseTable = (btn: HTMLElement) => {
+          btn.classList.toggle('expanded')
+          const body = btn.nextElementSibling as HTMLElement
+          if (body) body.classList.toggle('expanded')
+        }
 
       this.zohoFormService.loadCaptcha()
       this.zohoFormService.patchUserDataFromConfig()

@@ -1,4 +1,4 @@
-<div class="not-my-user-container margin-top-m" *ngIf="isNotMyUser && !isIgotOrg">        
+<div class="not-my-user-container margin-top-m" *ngIf="isNotMyUser && !isIgotOrg">
     <div class="not-my-user-content">
         <div>
             <mat-icon class="warning-icon" [ngStyle]="{'color':'red'}">warning</mat-icon>
@@ -6,7 +6,7 @@
         <div class="not-my-user-data">
             <p>
                 <span>{{ 'home.notMyUser1' | translate }}</span>
-                <b>{{ 'home.notMyUser2' | translate }}</b>. 
+                <b>{{ 'home.notMyUser2' | translate }}</b>.
                 <span>{{ 'home.notMyUser3' | translate }}</span>
             </p>
         </div>
@@ -155,7 +155,7 @@
             </div>
         </ng-container>
         <!-- Slider controls (only when more than 1 slide) -->
-        <ng-container *ngIf="nlwSlides.length > 1">
+        <ng-container *ngIf="nlwSlides?.length > 1">
             <button class="nlw-nav nlw-nav-left" (click)="prevNlwSlide()" aria-label="Previous slide">
                 <mat-icon>chevron_left</mat-icon>
             </button>
@@ -192,7 +192,7 @@
                         <div class="dot {{daysCompleted > i ? 'active' : ''}}" ></div>
                         <div class="line {{daysCompleted > i ? 'active' : ''}}" [ngStyle]="{'width': slwConfiguration?.width}"></div>
                         <div class="dot" *ngIf="(totalDays - 1) === i"></div>
-                    </div>                    
+                    </div>
                 </div>
             </div>
         </div>
@@ -210,7 +210,7 @@
         [profileData]="homePageData.profileCard" [insightsData]="insightsData"
         [isLoading]="profileDataLoading"></ws-widget-profile-card-stats>
 </div>
- 
+
 <section class="hidden md:block" style="position: relative;" [ngClass]="{'':!collapsed, 'margin-bottom-m': collapsed}">
     <div class="assessment-box  collapsible" [@collapse]="collapsed"
         [ngClass]="{'margin-bottom-remove margin-top-remove':collapsed}">
@@ -238,7 +238,7 @@
             [isLoading]="clapsDataLoading"></ws-widget-weekly-claps>
     </div>
 
-   
+
 
     <div class="collapsible" [@collapse]="collapsed" *ngIf="learnAdvisoryData">
         <ws-widget-tips-for-learner-card [learnAdvisoryData]="learnAdvisoryData"></ws-widget-tips-for-learner-card>
@@ -299,7 +299,7 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
     <!-- <section class="collapsible" [@collapsDiscuss]="collapsed" [ngClass]="{'':!collapsed}" *ngIf="!discussion?.error">
         <div class="flex flex-col discussion-card">
@@ -335,7 +335,7 @@
     <div *ngIf="learnAdvisoryData">
         <ws-widget-tips-for-learner-card [learnAdvisoryData]="learnAdvisoryData"></ws-widget-tips-for-learner-card>
     </div>
-    
+
 </section>
 <div *ngIf="surveyPopup && surveyPopup?.active">
     <ws-survey-form ></ws-survey-form>
