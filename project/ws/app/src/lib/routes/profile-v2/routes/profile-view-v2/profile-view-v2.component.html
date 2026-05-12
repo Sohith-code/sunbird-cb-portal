@@ -56,7 +56,7 @@
                 <ng-container *ngIf="primaryDetails?.profileStatus === 'VERIFIED'">
                   <img class="staus-icon" src="./assets/icons/Accept_icon.png" alt="status">
                 </ng-container>
-                <span class="user-name">({{primaryDetails?.username}})</span>
+                <!-- <span class="user-name">({{primaryDetails?.username}})</span>   product team asked this to be removed from UI. -->
               </div>
               <ng-container *ngIf="!isCurrentUser">
                 <mat-icon mat-icon-button i18n-aria-label aria-label="action items" class="not-my-user-menu menu"
