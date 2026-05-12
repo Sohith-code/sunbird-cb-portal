@@ -61,7 +61,7 @@
     "@sunbird-cb/notification": "0.0.5-cbrelease-4.8.36",
     "@sunbird-cb/rain-dashboards": "0.0.36-ang-13-16",
     "@sunbird-cb/resolver-v2": "0.0.7-ang-13-16",
-    "@sunbird-cb/toc": "0.35.15",
+    "@sunbird-cb/toc": "0.36.0",
     "@sunbird-cb/utils-v2": "0.0.3-cbrelease-4.8.35",
     "@types/file-saver": "^2.0.1",
     "@types/jest": "29.5.13",
