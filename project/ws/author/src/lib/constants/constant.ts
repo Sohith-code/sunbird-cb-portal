@@ -105,14 +105,14 @@ export const CATEGORY_TYPE = [
     filters: [],
     disabled: false,
   },
-  // {
-  //   name: 'peoples',
-  //   count: 0,
-  //   isChecked: false,
-  //   displayName: 'People',
-  //   filters: [],
-  //   disabled: false,
-  // },
+  {
+    name: 'peoples',
+    count: 0,
+    isChecked: false,
+    displayName: 'People',
+    filters: [],
+    disabled: false,
+  },
   {
     name: 'communities',
     count: 0,

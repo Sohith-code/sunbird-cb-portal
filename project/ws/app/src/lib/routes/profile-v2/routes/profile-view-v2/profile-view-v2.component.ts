@@ -1638,7 +1638,7 @@ export class ProfileViewV2Component implements OnInit, AfterViewInit, OnDestroy 
           setTimeout(() => {
             this.getAchievements()
           }, 500)
-          this.openSnackbar('Added Successfully')
+          this.openSnackbar('Added Successfully and this will be reflected in the Learner Passbook after 30 minutes')
         }
       },
       error: (error: HttpErrorResponse) => {
@@ -1656,7 +1656,7 @@ export class ProfileViewV2Component implements OnInit, AfterViewInit, OnDestroy 
           setTimeout(() => {
             this.getAchievements()
           }, 500)
-          this.openSnackbar('Updated Successfully')
+          this.openSnackbar('Updated Successfully and this will be reflected in the Learner Passbook after 30 minutes.')
         }
       },
       error: (error: HttpErrorResponse) => {

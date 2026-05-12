@@ -71,8 +71,7 @@ export class SearchInputHomeComponent implements OnInit, OnChanges {
     //   icon: 'school-search',
     // },
     { label: 'Events', value: SearchCategory.Events, icon: 'calender-event' },
-    // AFTER NLW NEED TO ENABLE
-    // { label: 'People', value: SearchCategory.People, icon: 'people-search' },
+    { label: 'People', value: SearchCategory.People, icon: 'people-search' },
     {
       label: 'External Contents',
       value: SearchCategory.ExternalContents,
@@ -93,8 +92,7 @@ export class SearchInputHomeComponent implements OnInit, OnChanges {
       value: SearchCategory.Resources,
       icon: 'diversity_3',
     },
-    // AFTER NLW NEED TO ENABLE
-    // { label: 'All', value: SearchCategory.All, icon: '' },
+    { label: 'All', value: SearchCategory.All, icon: '' },
   ];
 
   selectedSearchCategory: string = SearchCategory.Courses;

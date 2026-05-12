@@ -56,7 +56,7 @@
                 <ng-container *ngIf="primaryDetails?.profileStatus === 'VERIFIED'">
                   <img class="staus-icon" src="./assets/icons/Accept_icon.png" alt="status">
                 </ng-container>
-                <span class="user-name">({{primaryDetails?.username}})</span>
+                <!-- <span class="user-name">({{primaryDetails?.username}})</span>   product team asked this to be removed from UI. -->
               </div>
               <ng-container *ngIf="!isCurrentUser">
                 <mat-icon mat-icon-button i18n-aria-label aria-label="action items" class="not-my-user-menu menu"
@@ -139,27 +139,27 @@
               <mat-icon mat-icon-button i18n-aria-label aria-label="action items" class="menu" [matMenuTriggerFor]="profileMenu">more_vert</mat-icon>
             </div>
             <mat-menu #profileMenu="matMenu">
-              <ng-container *ngIf="connectionStatus === 'Pending'">
+              <!-- <ng-container *ngIf="connectionStatus === 'Pending'">
                 <button mat-menu-item (click)="openConformationDialog('Withdrawn')">
                   <span>{{ 'NetworkV2Profile.withdrawRequest' | translate }} </span>
                 </button>
-              </ng-container>
-              <ng-container
+              </ng-container> -->
+              <!-- <ng-container
                 *ngIf="connectionStatus !== 'Blocked Incoming' && connectionStatus !== 'Blocked Outgoing' && connectionStatus !== 'Pending'">
                 <button mat-menu-item (click)="openConformationDialog('Blocked')">
                   <span>{{ 'NetworkV2Profile.blockThisProfile' | translate }} </span>
                 </button>
-              </ng-container>
-              <ng-container *ngIf="connectionStatus === 'Approved'">
+              </ng-container> -->
+              <!-- <ng-container *ngIf="connectionStatus === 'Approved'">
                 <button mat-menu-item (click)="openConformationDialog('Removed')">
                   <span>{{ 'NetworkV2Profile.removeConnection' | translate }} </span>
                 </button>
-              </ng-container>
+              </ng-container> -->
               <button mat-menu-item (click)="copyProfileLink()">
                 <span>{{ 'NetworkV2Profile.copyProfileLink' | translate }} </span>
               </button>
             </mat-menu>
-            <ng-container [ngSwitch]="connectionStatus">
+            <!-- <ng-container [ngSwitch]="connectionStatus">
               <ng-container *ngSwitchCase="'Blocked Outgoing'">
                 <button mat-button class="connectButton " i18n (click)="updateProfileConnection('Unblocked')">
                   {{'NetworkV2Profile.unblock' | translate}}
@@ -184,7 +184,7 @@
                 </ng-container>
 
               </ng-container>
-            </ng-container>
+            </ng-container> -->
           </div>
         </ng-template>
       </div>
