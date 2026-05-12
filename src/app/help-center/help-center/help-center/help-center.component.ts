@@ -45,21 +45,21 @@ export class HelpCenterComponent implements OnInit {
   roleTabs: any[] = [];
   contentTabs: any[] = [];
 
-  constructor(private helpCenterSvc: HelpCenterService) {}
+  constructor(private helpCenterSvc: HelpCenterService) { }
 
-  ngOnInit() {    
+  ngOnInit() {
     this.helpCenterSvc.fetchHelpCenterConfig().subscribe((config: any) => {
-      this.helpCenterData = config;
+      this.helpCenterData = config
       if (this.helpCenterData) {
-        this.roleTabs = this.helpCenterData.roleTabs || [];
-        this.contentTabs = this.helpCenterData.contentTabs || [];
-        this.enabledSections = this.helpCenterData.enabledSections || {};
+        this.roleTabs = this.helpCenterData.roleTabs || []
+        this.contentTabs = this.helpCenterData.contentTabs || []
+        this.enabledSections = this.helpCenterData.enabledSections || {}
       }
-    });
+    })
   }
 
   isSectionEnabled(section: string): boolean {
-    return this.enabledSections[section] !== false;
+    return this.enabledSections[section] !== false
   }
 
   get filteredVideos(): VideoTutorial[] {

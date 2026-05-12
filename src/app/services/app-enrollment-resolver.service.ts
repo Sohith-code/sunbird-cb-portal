@@ -4,7 +4,7 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router'
 import { ConfigurationsService, DataTransferService, IResolveResponse } from '@sunbird-cb/utils-v2'
 import { Observable, of } from 'rxjs'
 import { catchError, map, tap } from 'rxjs/operators'
-import { ZohoFormService } from '../../app/header/header/zoho-form.service'
+import { ZohoFormUtilsService } from '../help-center/zoho-form-utils.service'
 
 const PROXIES_V8 = '/apis/proxies/v8'
 const ENROLL_CONTENT_DATA = `${PROXIES_V8}/learner/course/v4/user/enrollment/details`
@@ -13,7 +13,7 @@ export class AppEnrollmentResolverService {
     constructor(private configSvc: ConfigurationsService,
         private http: HttpClient,
         private dataTransfer: DataTransferService,
-        private zohoFormSvc: ZohoFormService,
+        private zohoFormUtilsSvc: ZohoFormUtilsService,
     ) { }
 
     resolve(
@@ -30,7 +30,7 @@ export class AppEnrollmentResolverService {
         }
         let enrollData = this.dataTransfer.getEnrollData()
         if (enrollData && enrollData.length) {
-            this.zohoFormSvc.clearEnrollmentCacheIfRecentAccess(userId, enrollData, _route.queryParams.collectionId)
+            this.zohoFormUtilsSvc.clearEnrollmentCacheIfRecentAccess(userId, enrollData, _route.queryParams.collectionId)
             return of({ error: null, data: { courses: enrollData } })
         } else {
             let request: any = {
@@ -44,7 +44,7 @@ export class AppEnrollmentResolverService {
 
                     if (rData.result && rData.result.courses && rData.result.courses.length) {
                         this.dataTransfer.setEnrollData(rData.result.courses)
-                        this.zohoFormSvc.clearEnrollmentCacheIfRecentAccess(userId, rData.result.courses, _route.queryParams.collectionId)
+                        this.zohoFormUtilsSvc.clearEnrollmentCacheIfRecentAccess(userId, rData.result.courses, _route.queryParams.collectionId)
                     }
                     return { data: rData.result, error: null }
                 }), //  (rData.responseData || []).map((p: any) => p.name)

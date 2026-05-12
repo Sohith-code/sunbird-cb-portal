@@ -1,5 +1,5 @@
 import { Component, HostListener, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core'
-import { ZohoFormService } from '../../../header/header/zoho-form.service'
+import { ZohoFormService } from '../../zoho-form.service'
 import { DialogBoxComponent as ZohoDialogComponent } from '@ws/app/src/lib/routes/profile-v3/components/dialog-box/dialog-box.component'
 import { HttpClient } from '@angular/common/http'
 import { DomSanitizer } from '@angular/platform-browser'
