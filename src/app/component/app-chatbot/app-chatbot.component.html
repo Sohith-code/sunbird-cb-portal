@@ -1,8 +1,7 @@
 <div class="fixed-width flex flex-wrap">
   <!-- //NOSONAR -->
   <div class="chatbot-icon-container" [ngStyle]="(configSvc.updatePlatformRatingObservable$ | async)"
-    *ngIf="showIcon && isHubEnable && (this.enableSupportAI || this.enableIGOTAIFlag)" (mouseover)="expanded = true"
-    (mouseleave)="expanded = false" (click)="iconClick('start')">
+    *ngIf="showIcon && isHubEnable && (this.enableSupportAI || this.enableIGOTAIFlag)" >
     <!-- [ngClass]="{'chatbot-icon-expanded': expanded}" -->
     <div class="chatbot-icon-ai flex" *ngIf="enableIGOTAIFlag || enableSupportAI">
       <div cdkDrag #dragItem class="draggable-icon" (cdkDragEnded)="onDragEnded($event)"
@@ -10,7 +9,8 @@
         <div class="icon-container chat-ai-icon">
           <div class="animated-border-box-glow"></div>
           <div class="animated-border-box">
-            <div class="agent-box"><img src="/assets/icons/agent.png" class="bounce-icon" /></div>
+            <div (mouseover)="expanded = true" (mouseleave)="expanded = false" (click)="iconClick('start')" class="agent-box"><img
+                src="/assets/icons/agent.png" class="bounce-icon" /></div>
           </div>
         </div>
       </div>

@@ -576,7 +576,7 @@
           <mat-form-field appearance="outline">
             <mat-select formControlName="category">
               <ng-container *ngFor="let category of eCategory">
-                <mat-option [value]="category">{{ handleTranslateToProfile(category?.toLowerCase()) }}</mat-option>
+                <mat-option [value]="category">{{ category }}</mat-option>
               </ng-container>
             </mat-select>
           </mat-form-field>

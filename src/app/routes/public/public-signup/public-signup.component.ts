@@ -562,7 +562,7 @@ export class PublicSignupComponent implements OnInit, OnDestroy {
     // indicate loading state so scroll handlers don't trigger parallel calls
     this.isLoadingMoreDesignations = true
 
-    this.usersService.searchPublicDesignation(requestBody).pipe(finalize(() => {
+    this.usersService.searchDesignationPublicPage(requestBody).pipe(finalize(() => {
       this.isLoadingMoreDesignations = false
       this.designationInitInProgress = false
     }))

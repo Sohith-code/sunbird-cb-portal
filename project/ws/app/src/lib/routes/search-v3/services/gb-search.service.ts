@@ -35,6 +35,7 @@ const DEFAULT_API_ENDPOINTS = {
   EXPLORE_API: '/api/course/v1/explore',
   MICRO_CREDENTIALS: '/apis/proxies/v8/promotionalcontent/v1/assignedto/users',
   GetApplicationsById: '/apis/proxies/v8/forms/v2/bulkGetApplicationsById',
+  ENROLLMENT_DICTIONARY_API: `/apis/proxies/v8/user/v1/learning/dictionary`,
 }
 
 @Injectable({
@@ -194,6 +195,10 @@ export class GbSearchService {
   microCredentialsSearch(): Observable<any> {
     const url = this.domainConfSvc.getApiUrl('content', 'microCredentials', DEFAULT_API_ENDPOINTS.MICRO_CREDENTIALS)
     return this.http.get<any>(url)
+  }
+
+  enrollmentDictionary(): Observable<any> {
+    return this.http.get(DEFAULT_API_ENDPOINTS.ENROLLMENT_DICTIONARY_API)
   }
 
 }

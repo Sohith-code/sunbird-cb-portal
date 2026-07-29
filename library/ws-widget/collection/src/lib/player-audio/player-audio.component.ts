@@ -206,7 +206,7 @@ export class PlayerAudioComponent extends WidgetBaseComponent
     }
     const initObj = videoJsInitializer(
       this.audioTag.nativeElement,
-      { ...videoJsOptions, poster: this.viewerSvc.getPublicUrl(this.widgetData.posterImage || '') },
+      { ...videoJsOptions, poster: this.widgetData.posterImage ? this.viewerSvc.getPublicUrl(this.widgetData.posterImage || '') : '' },
       dispatcher,
       saveCLearning,
       fireRProgress,

@@ -188,6 +188,7 @@ export class InitService {
     const isPublicPreviewOrCreator = href.includes('/public/')
       || href.includes('&preview=true')
       || href.includes('editMode=true')
+      || window.location.href.includes('/helpcenter')
     if (!isPublicPreviewOrCreator) {
       await this.globalConfigData()
     }

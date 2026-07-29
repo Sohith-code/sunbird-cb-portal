@@ -105,14 +105,14 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="isCardElementEnabled('inProgress') && courseEnrollment && courseEnrollment?.completionPercentage < 100">
+                                    *ngIf="isCardElementEnabled('inProgress') && courseEnrollment && courseEnrollment?.active && (courseEnrollment?.status === 0 || courseEnrollment?.status === 1)">
                                     <div class="inprogress-course font-stats rounded">In - Progress</div>
                                 </ng-container>
-                                <ng-container *ngIf="isCardElementEnabled('unenrolled') && isUnenrolled">
+                                <ng-container *ngIf="isCardElementEnabled('unenrolled') && courseEnrollment && courseEnrollment?.active === false">
                                     <div class="un-enrolled-course font-stats rounded">Un-Enrolled</div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="isCardElementEnabled('completed') && courseEnrollment && courseEnrollment?.completionPercentage === 100">
+                                    *ngIf="isCardElementEnabled('completed') && courseEnrollment && courseEnrollment?.completionPercentage === 2">
                                     <div class="inprogress-course font-stats rounded">Completed</div>
                                 </ng-container>
                             </div>

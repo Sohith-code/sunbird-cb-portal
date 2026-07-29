@@ -9,6 +9,7 @@ import {
   EventEmitter,
 } from '@angular/core'
 import { GbSearchService } from '../../services/gb-search.service'
+import { IndexedDbService } from '../../services/indexed-db.service'
 import {
   ConfigurationsService,
   EventService,
@@ -146,7 +147,8 @@ export class LearnSearchComponent implements OnInit, OnChanges, OnDestroy {
     private router: Router,
     private langtranslations: MultilingualTranslationsService,
     private userService: WidgetUserService,
-    private networkV2Service: NetworkV2Service
+    private networkV2Service: NetworkV2Service,
+    private indexedDbService: IndexedDbService
   ) {
     if (localStorage.getItem('websiteLanguage')) {
       this.translate.setDefaultLang('en')
@@ -189,11 +191,22 @@ export class LearnSearchComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.updateNoResultMessage(this.statedata.param)
-
+    this.checkCourseEnrollmentAndCbpPlan()
 
     this.getFetchIgotSpecializationPrograms()
     // this.fetchCbpPlan()
     localStorage.removeItem(SearchConstantLocalStorage.SortType)
+  }
+
+  async loadEnrollmentDetailsFromCache() {
+    try {
+      const cachedData = await this.indexedDbService.getEnrollmentDetails()
+      if (cachedData) {
+        this.enrollmentDetails = cachedData
+      }
+    } catch (error) {
+      console.error('Failed to load enrollmentDetails from IndexedDB:', error)
+    }
   }
 
   async ngOnChanges(changes: SimpleChanges) {
@@ -380,8 +393,6 @@ export class LearnSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.courseSearchResults = result.result.content
       this.courseSearchTotalCount = result.result?.count
       this.coursesFacets = result.result?.facets || []
-
-      this.checkCourseEnrollmentAndCbpPlan(this.courseSearchResults)
 
       this.combinedFacets = []
       this.combinedFacets = [...this.combinedFacets, (result.result?.facets || [])]
@@ -1479,39 +1490,19 @@ export class LearnSearchComponent implements OnInit, OnChanges, OnDestroy {
     })
   }
 
-  checkCourseEnrollmentAndCbpPlan(courseSearchResults: any) {
-    const userId = this.configSvc.userProfile?.userId || ''
-    const request = {
-      request: {
-        retiredCoursesEnabled: true,
-        limit: this.initialPaginationSize,
-        courseId: courseSearchResults.map((course: any) => course.identifier),
-      },
-    }
+  checkCourseEnrollmentAndCbpPlan() {
     forkJoin({
-      inProgress: this.searchV3Service.enrollment(
-        { request: { ...request.request, status: 'In-Progress' } },
-        userId
-      ),
-      completed: this.searchV3Service.enrollment(
-        { request: { ...request.request, status: 'Completed' } },
-        userId
-      ),
-      unenrolled: this.searchV3Service.enrollment(
-        { request: { ...request.request, status: 'Unenrolled' } },
-        userId
-      ),
+      enrollmentDetails: this.searchV3Service.enrollmentDictionary(),
       cbpPlan: this.userService.fetchCbpPlanList(),
     }).subscribe((responses) => {
-      const inProgressCourses =
-        (responses.inProgress as any)?.result?.courses || []
-      const completedCourses =
-        (responses.completed as any)?.result?.courses || []
-
-      this.enrollmentDetails = [...inProgressCourses, ...completedCourses]
-      console.log('Enrollment Details:', this.enrollmentDetails)
+      this.enrollmentDetails = responses.enrollmentDetails || {}
       this.cbpPlanList = responses.cbpPlan || []
-      this.unenrolledCourses = (responses.unenrolled as any)?.result?.courses || []
+
+      // Store enrollmentDetails in IndexedDB
+      if (responses.enrollmentDetails && responses.enrollmentDetails.result && responses.enrollmentDetails.result.response) {
+        this.indexedDbService.setEnrollmentDetails(responses.enrollmentDetails.result.response)
+          .catch(error => console.error('Failed to store enrollmentDetails in IndexedDB:', error))
+      }
     })
   }
 

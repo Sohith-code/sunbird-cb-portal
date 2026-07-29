@@ -20,6 +20,7 @@ import { CertificateDialogComponent } from '@sunbird-cb/collection'
 import { CertificateService } from '../../../certificate/services/certificate.service'
 import { Router } from '@angular/router'
 import { CommonMethodsService, WidgetContentLibService } from '@sunbird-cb/consumption'
+import { IndexedDbService } from '../../services/indexed-db.service'
 import * as _ from 'lodash'
 
 const MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24
@@ -48,6 +49,7 @@ export class CourseContentCardComponent implements OnInit, OnChanges {
   igotSpecializationProgram: any
   CaCourseUnitIds = '[]'
   isUnenrolled = false
+  enrollmentDetailsFromDB: any = {}
   constructor(
     private configSvc: ConfigurationsService,
     private domainConfSvc: DomainConfService,
@@ -56,7 +58,8 @@ export class CourseContentCardComponent implements OnInit, OnChanges {
     private certificateService: CertificateService,
     private router: Router,
     private contSvc: WidgetContentLibService,
-    private commonSvc: CommonMethodsService
+    private commonSvc: CommonMethodsService,
+    private indexedDbService: IndexedDbService
   ) { }
 
   isCardElementEnabled(key: string): boolean {
@@ -67,6 +70,34 @@ export class CourseContentCardComponent implements OnInit, OnChanges {
     this.compentencyKey =
       this.configSvc.compentency[environment.compentencyVersionKey]
     this.CaCourseUnitIds = this.commonSvc.getCourseUnitIds()
+    this.loadEnrollmentDetailsFromIndexedDB()
+  }
+
+  async loadEnrollmentDetailsFromIndexedDB() {
+    try {
+      const cachedData = await this.indexedDbService.getEnrollmentDetails()
+      if (cachedData) {
+        this.enrollmentDetailsFromDB = cachedData
+        // Check if current content is enrolled using IndexedDB data
+        this.checkEnrollmentFromDB()
+      }
+    } catch (error) {
+      console.error('Failed to load enrollment details from IndexedDB:', error)
+    }
+  }
+
+  checkEnrollmentFromDB() {
+    if (this.enrollmentDetailsFromDB && this.content?.identifier) {
+      // Check if the course is enrolled in the cached enrollment details
+      const enrollmentRecord = this.enrollmentDetailsFromDB[this.content.identifier]
+      if (enrollmentRecord) {
+        // You can use this enrollment record as needed
+        // For example, update courseEnrollment
+        if (!this.courseEnrollment) {
+          this.courseEnrollment = enrollmentRecord
+        }
+      }
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -97,7 +128,6 @@ export class CourseContentCardComponent implements OnInit, OnChanges {
         this.igotSpecializationProgram = false
       }
     }
-    this.findIsUnenrolled()
   }
 
   checkForCiosDuration(item: any) {
@@ -200,11 +230,5 @@ export class CourseContentCardComponent implements OnInit, OnChanges {
         .join(' · ')
     }
     return ''
-  }
-
-  findIsUnenrolled(): void {
-    if (this.unenrolledCourses.length) {
-      this.isUnenrolled = this.unenrolledCourses.some((ele: any) => ele.courseId === this.content?.identifier)
-    }
   }
 }

@@ -207,6 +207,9 @@ export class UserProfileService {
     }
     return this.http.post<any>(url, _req)
   }
+  searchDesignationPublicPage(_req: any): Observable<any> {
+    return this.http.post<any>(API_ENDPOINTS.GET_SEARCH_PUBLIC_DESIGNATIONS, _req)
+  }
 
   searchIgotDesignation(_req: any): Observable<any> {
     return this.http.post<any>(API_ENDPOINTS.GET_SUNBIRD_IGOT_SEARCH, _req)

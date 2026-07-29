@@ -2,7 +2,7 @@
   position: fixed;
   bottom: 120px;
   right: 0px;
-  cursor: pointer;
+  // cursor: pointer;
   height: 90px;
   align-items: flex-start;
   display: flex;
@@ -825,6 +825,7 @@
 
 .agent-box {
   text-align: center;
+  cursor: pointer;
 }
 
 .icon-container {
