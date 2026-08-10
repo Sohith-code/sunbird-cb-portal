@@ -1,23 +1,73 @@
 .search-block {
     input {
         border-radius: 4px;
-        border: 1px solid rgba(0,0,0, 0.16);
+        border: 1px solid rgba(0, 0, 0, 0.16);
         opacity: 1;
         padding: 14px 48px;
         width: -webkit-fill-available;
         width: -moz-available;
     }
+
     mat-icon {
         left: 12px;
         top: 10px;
     }
 }
+
 .filter-acbp {
     padding-left: 16px;
 }
+
+@media only screen and (max-width: 1024px) {
+    #listPage {
+        min-width: 0;
+        width: 100%;
+
+        // Keep cards aligned with the search input (24px filter icon + 16px spacing).
+        >.mr-2.mb-5 {
+            box-sizing: border-box;
+            margin-right: 0;
+            max-width: calc(100% - 40px);
+            min-width: 0;
+            width: calc(100% - 40px);
+        }
+
+        ::ng-deep ws-widget-card-content-v2,
+        ::ng-deep .widget-card-content-new,
+        ::ng-deep .card-wide-v2 {
+            box-sizing: border-box;
+            max-width: 100%;
+            min-width: 0;
+            width: 100%;
+        }
+
+        ::ng-deep .card-standard-container,
+        ::ng-deep .card-portrait {
+            box-sizing: border-box;
+            max-width: 100%;
+            min-width: 0;
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+
+    .search-block {
+        width: 100%;
+    }
+
+    .main-left {
+        padding-left: 6px;
+    }
+
+    .filter-acbp {
+        padding-left: 6px;
+    }
+}
+
 .heading {
     opacity: 1;
-    color: rgba(0,0,0,0.87);
+    color: rgba(0, 0, 0, 0.87);
     font: 600 16px/24px Montserrat-SemiBold, sans-serif;
     font-style: normal;
     letter-spacing: 0.12px;
@@ -30,7 +80,8 @@
     opacity: 1;
     width: fit-content;
     padding: 8px;
-    p{
+
+    p {
         opacity: 1;
         color: rgba(0, 0, 0, 0.87);
         font-family: "Lato-Regular", sans-serif;
@@ -53,14 +104,15 @@
     top: 2px;
     right: 0px;
 }
+
 .search-help-text {
     opacity: 1;
-color: rgba(0, 0, 0, 0.87);
-font-family: "Lato-Regular", sans-serif;
-font-size: 14px;
-font-weight: 400;
-font-style: Regular;
-letter-spacing: 0.25px;
-text-align: center;
-line-height: 20px;
+    color: rgba(0, 0, 0, 0.87);
+    font-family: "Lato-Regular", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    font-style: Regular;
+    letter-spacing: 0.25px;
+    text-align: center;
+    line-height: 20px;
 }

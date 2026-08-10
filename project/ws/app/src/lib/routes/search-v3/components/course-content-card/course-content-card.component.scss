@@ -394,3 +394,374 @@
   color: rgba(255, 255, 255, 1) !important;
   opacity: 1;
 }
+
+// Global Search: responsive adjustments for Blended Program results only.
+@media (min-width: 769px) and (max-width: 1040px) {
+  :host(.global-search-blended-program-card) {
+    display: block;
+    width: calc(100% - 32px);
+    max-width: 100%;
+    min-width: 0;
+    margin-inline: auto;
+    box-sizing: border-box;
+
+    .course-content-card-wrapper,
+    .course-card,
+    .card-container {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .course-content {
+      min-width: 0;
+    }
+
+  }
+}
+
+@media (max-width: 1040px) {
+  :host(.global-search-blended-program-card) {
+    .course-author {
+      min-width: 0;
+    }
+
+    .organization-name {
+      flex: 1 1 0;
+      width: auto;
+      max-width: none;
+      min-width: 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  :host(.global-search-blended-program-card) {
+    .card-container {
+      position: relative;
+    }
+
+    .course-type,
+    .knowledge-level-container {
+      position: absolute;
+      top: 24px;
+      z-index: 2;
+      max-width: calc(50% - 28px);
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .course-type {
+      left: 24px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .knowledge-level-container {
+      right: 24px;
+    }
+
+    .level-badge {
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+@media (max-width: 425px) {
+  :host(.global-search-blended-program-card) {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    .course-content-card-wrapper,
+    .course-card,
+    .card-container {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .card-container {
+      flex-direction: row;
+      align-items: flex-start;
+      padding: 54px 16px 24px;
+      position: relative;
+    }
+
+    .card-meta-row {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      left: 16px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .card-meta-row .course-type,
+    .card-meta-row>.right-section-row,
+    .card-meta-row>.right-section-column {
+      position: static;
+      max-width: calc(50% - 4px);
+      min-width: 0;
+    }
+
+    .card-meta-row .knowledge-level-container {
+      position: static;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .right-section-row,
+    .right-section-column {
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .bookmark-section:empty {
+      display: none;
+    }
+
+    .course-image-container {
+      flex: 0 0 42%;
+      width: 42%;
+      min-width: 0;
+      max-width: 147px;
+      height: 100px;
+    }
+
+    .course-content {
+      flex: 1 1 0;
+      width: auto;
+      min-width: 0;
+      min-height: 100px;
+      padding-left: 12px !important;
+    }
+
+    .course-title {
+      display: -webkit-box;
+      max-width: 100%;
+      min-height: 34px;
+      overflow: hidden;
+      white-space: normal;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .course-author {
+      flex-wrap: nowrap;
+      min-width: 0;
+    }
+
+
+    .organization-name {
+      display: block;
+      flex: 1 1 0;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .px-4 {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+}
+
+@media (max-width: 1439px) {
+  :host(.global-search-course-card) {
+    .course-author {
+      min-width: 0;
+    }
+
+    .organization-name {
+      flex: 1 1 0;
+      width: auto;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .author-avatar {
+      flex-shrink: 0;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  :host(.global-search-course-card) {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    .course-content-card-wrapper,
+    .course-card,
+    .card-container {
+      width: 99%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .card-container {
+      flex-direction: row;
+      align-items: flex-start;
+      padding: 54px 16px 24px;
+      position: relative;
+    }
+
+    .card-meta-row {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      left: 16px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .card-meta-row .course-type,
+    .card-meta-row>.right-section-row,
+    .card-meta-row>.right-section-column {
+      position: static;
+      max-width: calc(50% - 4px);
+      min-width: 0;
+    }
+
+    .card-meta-row .knowledge-level-container {
+      position: static;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .right-section-row,
+    .right-section-column {
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .bookmark-section:empty {
+      display: none;
+    }
+
+    .course-image-container {
+      flex: 0 0 42%;
+      width: 42%;
+      min-width: 0;
+      max-width: 147px;
+      height: 100px;
+    }
+
+    .course-content {
+      flex: 1 1 0;
+      width: auto;
+      min-width: 0;
+      min-height: 100px;
+      padding-left: 12px !important;
+    }
+
+    .course-title {
+      display: -webkit-box;
+      max-width: 100%;
+      min-height: 34px;
+      overflow: hidden;
+      white-space: normal;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .course-author {
+      flex-wrap: nowrap;
+      min-width: 0;
+    }
+
+    .organization-name {
+      display: block;
+      flex: 1 1 0;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+@media (max-width: 425px) {
+  :host(.global-search-course-card) {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    .course-content-card-wrapper,
+    .course-card,
+    .card-container {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+  }
+}
+
+// Global Search only: keep image badges on one line on narrow m-web screens.
+@media (max-width: 375px) {
+  :host(.global-search-course-card) {
+    .course-badges {
+      right: 4px;
+      bottom: 4px;
+      gap: 2px !important;
+      max-width: calc(100% - 8px);
+      white-space: nowrap;
+    }
+
+    .badge {
+      padding: 3px 4px;
+      font-size: 8px;
+      line-height: 10px;
+      white-space: nowrap;
+    }
+
+    .duration-badge {
+      gap: 2px;
+    }
+
+    .duration-badge mat-icon {
+      width: 12px;
+      height: 12px;
+      font-size: 12px;
+    }
+
+    .course-type {
+      padding: 3px 5px;
+      font-size: 8px;
+      line-height: 10px;
+    }
+
+    .course-type .document-icon {
+      width: 12px;
+      height: 12px;
+      font-size: 12px;
+    }
+  }
+}

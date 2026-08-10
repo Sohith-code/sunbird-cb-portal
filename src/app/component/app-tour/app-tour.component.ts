@@ -1,17 +1,19 @@
-import { Component, HostListener } from '@angular/core'
+import { Component, HostListener, Input, OnChanges } from '@angular/core'
 import { ProgressIndicatorLocation, GuidedTour, Orientation, GuidedTourService } from 'igot-cb-tour-guide'
 import { UtilityService, EventService, WsEvents, ConfigurationsService } from '@sunbird-cb/utils-v2'
 import { UserProfileService } from '@ws/app'
 import { TranslateService } from '@ngx-translate/core'
 @Component({
-    selector: 'app-tour',
-    templateUrl: './app-tour.component.html',
-    styleUrls: ['./app-tour.component.scss'],
-    providers: [UserProfileService],
-    standalone: false
+  selector: 'app-tour',
+  templateUrl: './app-tour.component.html',
+  styleUrls: ['./app-tour.component.scss'],
+  providers: [UserProfileService],
+  standalone: false
 })
 
-export class AppTourComponent {
+export class AppTourComponent implements OnChanges {
+
+  @Input() showOnlyIgotKarmayogi = false
   progressIndicatorLocation = ProgressIndicatorLocation.TopOfTourBlock
   currentWindow: any
   videoProgressTime = 114
@@ -175,7 +177,12 @@ export class AppTourComponent {
     this.isMobile = this.utilitySvc.isMobile
     this.raiseGetStartedStartTelemetry()
   }
-
+  ngOnChanges(): void {
+    if (this.showOnlyIgotKarmayogi) {
+      this.starVideoPlayer()
+      this.updateTourstatus({ visited: true, skipped: false })
+    }
+  }
   updateTourstatus(status: any) {
     const reqUpdates = {
       request: {
@@ -189,7 +196,7 @@ export class AppTourComponent {
   }
 
   emitFromVideo(event: any) {
-    if (event === 'skip') {
+    if (event === 'skip' || this.showOnlyIgotKarmayogi) {
       this.skipTour(`video-${event}`, 'video')
     } else {
       this.startTour(`welcome-${event}`, 'welcome')

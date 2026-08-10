@@ -122,6 +122,10 @@
   .container-balanced {
     width: 90%;
   }
+
+  .container-balanced.full-width-mobile-route {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {

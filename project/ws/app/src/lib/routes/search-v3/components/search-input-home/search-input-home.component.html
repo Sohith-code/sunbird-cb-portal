@@ -81,7 +81,7 @@
           <span class="text-sm recent-search-title font-normal">Recent Searches</span>
           <p class="text-xs font-normal no-recent-search-text">No recent searches</p>
         </div>
-        <ng-container *ngIf="allSearchResults.length > 0">
+        <ng-container *ngIf="showAllSearchResults && allSearchResults.length > 0">
           <mat-list>
             <div mat-subheader class="flex justify-between mt-4 mb-1">
               <span class="text-sm recent-search-title font-normal">All Search Results</span>
@@ -108,7 +108,7 @@
         <!-- <div class="no-results" *ngIf="!queryControl.value">
           No results found
         </div> -->
-        <ng-container *ngIf="allSearchResults.length > 0 && queryControl.value">
+        <ng-container *ngIf="showAllSearchResults && allSearchResults.length > 0 && queryControl.value">
           <div class="see-all-results">
             <a mat-button (click)="updateQuery(queryControl.value)">See all the results...</a>
           </div>

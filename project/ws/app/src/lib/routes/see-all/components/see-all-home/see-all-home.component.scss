@@ -2,16 +2,91 @@
     max-width: 1200px;
 }
 
+@media only screen and (min-width: 577px) and (max-width: 1024px) {
+    .seeAll-home-container {
+        margin-top: 84px;
+    }
+}
+
+@media only screen and (max-width: 1199px) {
+    .seeAll-home-container {
+        width: 100%;
+        padding: 0 24px;
+        box-sizing: border-box;
+    }
+
+    .course-card-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 382px));
+        justify-content: center;
+        align-items: stretch;
+        gap: 20px 16px;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+
+        .course-card-item {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            margin: 0;
+        }
+
+        ::ng-deep ws-widget-card-content-v2 {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        ::ng-deep .card-standard-container,
+        ::ng-deep .card-portrait {
+            margin: 0;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+
+        ::ng-deep .course_widget {
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        ::ng-deep .course_v2,
+        ::ng-deep .knowledge-level-container {
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+    }
+}
+
+@media only screen and (min-width: 600px) and (max-width: 899px) {
+    .seeAll-home-container {
+        padding: 0 16px;
+    }
+
+    .course-card-grid {
+        grid-template-columns: repeat(auto-fit, minmax(342px, 382px));
+    }
+}
+
 .page-header {
     font-size: 16px;
     font-weight: bold;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 599px) {
     .seeAll-home-container {
         // margin-top: 192px;
         flex-direction: column;
-        padding: 0 16px;
+        padding: 0 12px;
+    }
+
+    .course-card-grid {
+        grid-template-columns: minmax(0, 382px);
     }
 }
 

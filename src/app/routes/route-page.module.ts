@@ -4,7 +4,7 @@ import { PageModule, PageComponent } from '@sunbird-cb/collection'
 import { ExploreDetailResolve, PageResolve, PageNameResolve, ModuleNameResolve } from '@sunbird-cb/utils-v2'
 import { GeneralGuard } from '../guards/general.guard'
 import { AppTocResolverService } from '@sunbird-cb/toc'
-import { AppHomePageResolverService } from '../services/app-home-page-resolver.service'
+// import { AppHomePageResolverService } from '../services/app-home-page-resolver.service'
 import { HomeResolverService } from '../home/home/home-resolver.service'
 import { FormMicroSiteDataService } from '../services/form-micro-site-data.service'
 import { CustomHomeFormResolverService } from '../component/custom-home/resolvers/custom-home-form-resolver.service'
@@ -56,7 +56,7 @@ const routes: Routes = [
     },
     resolve: {
       microSiteData: FormMicroSiteDataService,
-      pageData: AppHomePageResolverService,
+      // pageData: AppHomePageResolverService,
     },
     canActivate: [GeneralGuard],
   },

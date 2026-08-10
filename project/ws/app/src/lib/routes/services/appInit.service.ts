@@ -583,11 +583,26 @@ export class InitService {
     if (!localStorage.getItem('firsLogin')) {
       this.http.get<any>(endpoint.FIRST_LOGIN_API).pipe(map((res: any) => {
         if (res && res.result) {
-          this.configSvc.isNewUser = !res?.result?.last_login
+          this.configSvc.isNewUser = this.resolveIsNewUser(res.result)
           localStorage.setItem('firsLogin', 'true')
         }
       })).toPromise()
     }
+  }
+
+  /**
+   * A first-ever login used to be signalled by login/entry omitting `last_login`. The backend
+   * now always returns both timestamps and marks a first login by `first_login === last_login`.
+   * The missing-`last_login` case is kept as a fallback so an older backend still works.
+   * Compared as strings because the timestamps are epoch millis that may arrive as either type.
+   */
+  private resolveIsNewUser(result: any): boolean {
+    const lastLogin = result?.last_login
+    if (!lastLogin) {
+      return true
+    }
+    const firstLogin = result?.first_login
+    return !!firstLogin && String(firstLogin) === String(lastLogin)
   }
   private async fetchStartUpDetails(): Promise<any> {
     // const userRoles: string[] = []

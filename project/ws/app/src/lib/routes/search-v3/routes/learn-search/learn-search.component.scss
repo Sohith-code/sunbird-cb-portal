@@ -124,7 +124,7 @@
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 959px) {
   .custom-sidenav {
     width: auto !important;
     margin-top: 40px;
@@ -139,6 +139,27 @@
     margin-right: 8px;
     overflow: hidden;
   }
+}
+
+@media (max-width: 768px) {
+  .mobile-search-controls {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 599px) {
+  .custom-sidecontent {
+    padding-bottom: 72px;
+  }
+}
+
+// Defensive stacking fix: on some m-web widths the filter-toggle (hamburger) button was
+// reported as unclickable, most likely because it sits close to where the filter drawer's
+// fixed-position container is anchored. Give it an explicit stacking context above the
+// drawer so a click always reaches the button itself.
+#ws-auth-root-home-btn-menu {
+  position: relative;
+  z-index: 5;
 }
 
 .no-data-text {
@@ -201,7 +222,7 @@
   /* height: calc(100vh - 10px); */
   margin-bottom: 10px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 959px) {
     width: 61.5% !important;
   }
 }

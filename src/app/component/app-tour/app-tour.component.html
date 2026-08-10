@@ -1,12 +1,13 @@
 <div class="skip-tour-modal" *ngIf="closePopupIcon">
-  <mat-icon *ngIf="!hideCloseBtn" (click)="skipTour('','')" class="mat-icon notranslate material-icons mat-icon-no-color" role="img" aria-hidden="true">close</mat-icon>
+  <mat-icon *ngIf="!hideCloseBtn" (click)="skipTour('','')"
+    class="mat-icon notranslate material-icons mat-icon-no-color" role="img" aria-hidden="true">close</mat-icon>
 </div>
 <div (click)="closeModal()" *ngIf="showpopup" class="backdrop bg-zinc-400" [ngClass]="{'requires-no-scroll': noScroll}">
   <div class="app-tour-popup" *ngIf="!isMobile" (click)="$event.stopPropagation()">
     <div class="first-panel">
       <div class="text-center">
         <span class="ws-mat-default-text mat-h2 tour-panel-title">{{'tour.getStarted' | translate }}</span>
-        <br/>
+        <br />
         <span class="ws-mat-default-text mat-h5 tour-panel-desc">{{'tour.welcomeNote' | translate }}</span>
       </div>
       <div class="first-action-container">
@@ -28,8 +29,10 @@
         </div>
         <div class="second-panel-action second-panel-action-buttons">
           <!-- <span (click)="skipTour()" class="skip-btn">Skip</span> -->
-          <button (click)="skipTour('welcome-skip', 'welcome')" class="dialog-btn skip-btn" mat-button>{{'tour.skip' | translate }}</button>
-          <button (click)="starVideoPlayer()" class="dialog-btn ws-mat-primary-background-op30 action-orange" mat-button>{{'tour.getStarted' | translate }}</button>
+          <button (click)="skipTour('welcome-skip', 'welcome')" class="dialog-btn skip-btn" mat-button>{{'tour.skip' |
+            translate }}</button>
+          <button (click)="starVideoPlayer()" class="dialog-btn ws-mat-primary-background-op30 action-orange"
+            mat-button>{{'tour.getStarted' | translate }}</button>
         </div>
       </div>
     </div>
@@ -46,18 +49,18 @@
     <div class="first-panel">
       <div class="text-center">
         <span class="ws-mat-white-text mat-h2 header-text">{{'tour.getStarted' | translate }}</span>
-        <br/>
+        <br />
         <span class="ws-mat-white-text mat-h5 header-desc">{{'tour.welcomeNote' | translate }}</span>
       </div>
     </div>
     <div class="second-panel no-border">
       <div class="second-action-container">
-          <div class="second-panel-action" (click)="starVideoPlayer()">
-            <div class="blk1"><mat-icon class="icon-tour gray-icon">check_circle</mat-icon></div>
-            <div class="blk2"><img alt="" src="fusion-assets/images/play-tour.svg"></div>
-            <div class="blk3"><span>{{'tour.whatIsiGOTKarmayogi' | translate }}</span></div>
-            <div class="blk4"><mat-icon class="icon-tour blue-icon">navigate_next</mat-icon></div>
-          </div>
+        <div class="second-panel-action" (click)="starVideoPlayer()">
+          <div class="blk1"><mat-icon class="icon-tour gray-icon">check_circle</mat-icon></div>
+          <div class="blk2"><img alt="" src="fusion-assets/images/play-tour.svg"></div>
+          <div class="blk3"><span>{{'tour.whatIsiGOTKarmayogi' | translate }}</span></div>
+          <div class="blk4"><mat-icon class="icon-tour blue-icon">navigate_next</mat-icon></div>
+        </div>
       </div>
     </div>
     <div class="second-panel">
@@ -73,7 +76,8 @@
     <div class="third-panel">
       <div class="second-panel-action second-panel-action-buttons">
         <span (click)="skipTour('welcome-skip', 'welcome')" class="skip-btn">{{'tour.takeTour' | translate }}</span>
-        <button (click)="starVideoPlayer()" class="dialog-btn ws-mat-primary-background-op30 action-orange" mat-button>{{'tour.getStarted' | translate }}</button>
+        <button (click)="starVideoPlayer()" class="dialog-btn ws-mat-primary-background-op30 action-orange"
+          mat-button>{{'tour.getStarted' | translate }}</button>
       </div>
     </div>
   </div>
@@ -81,17 +85,14 @@
 </div>
 
 <!-- <ngx-guided-tour backText="Previous" doneText="Finish" progressIndicatorLocation="inside-next-button"></ngx-guided-tour> -->
-<ngx-guided-tour
-  nextText="{{'tour.next' | translate}}"
-  backText="{{'tour.previous' | translate}}"
-  doneText="{{'tour.finish' | translate}}"
-  progressIndicatorLocation="dots"></ngx-guided-tour>
+<ngx-guided-tour nextText="{{'tour.next' | translate}}" backText="{{'tour.previous' | translate}}"
+  doneText="{{'tour.finish' | translate}}" progressIndicatorLocation="dots"></ngx-guided-tour>
 
 <div *ngIf="showCompletePopup && !isMobile" class="backdrop bg-zinc-400" [ngClass]="{'requires-no-scroll': noScroll}">
   <div *ngIf="showCompletePopup && !isMobile" (click)="onCongrats()" class="complete-tour">
     <img width="107" height="107" alt="" src="/assets/icons/tour-complete.png">
     <span class="ws-mat-default-text mat-h2">{{'tour.congrats' | translate }}</span>
-    <br/>
+    <br />
     <span class="ws-mat-default-text mat-h5">{{'tour.startNow' | translate }}</span>
   </div>
   <div class="tour-avatar">
@@ -110,7 +111,7 @@
       </div>
       <div class="complete-mobile-panel2">
         <span class="title">{{'tour.congrats' | translate }}</span>
-        <br/>
+        <br />
         <span class="desc">{{'tour.startNow' | translate }}</span>
       </div>
     </div>
@@ -118,9 +119,12 @@
 </div>
 
 
-<div (click)="closeModal()" *ngIf="showVideoTour && !isMobile" class="backdrop bg-zinc-400" [ngClass]="{'requires-no-scroll': noScroll}">
+<div (click)="closeModal()" *ngIf="showVideoTour && !isMobile" class="backdrop bg-zinc-400"
+  [ngClass]="{'requires-no-scroll': noScroll}">
   <div (click)="$event.stopPropagation()">
-    <ws-app-tour-video [videoProgressTime]="videoProgressTime" (emitedValue)="emitFromVideo($event)" [showVideoTour]="showVideoTour" [isMobile]="isMobile"></ws-app-tour-video>
+    <ws-app-tour-video [videoProgressTime]="videoProgressTime" (emitedValue)="emitFromVideo($event)"
+      [showVideoTour]="showVideoTour" [isMobile]="isMobile"
+      [showOnlyIgotKarmayogi]="showOnlyIgotKarmayogi"></ws-app-tour-video>
   </div>
   <!-- <div *ngIf="showVideoTour && !isMobile" class="video-tour">
     <div class="flex tour-video-container">
@@ -141,8 +145,11 @@
   </div> -->
 </div>
 <!-- Mobile video player -->
-<div (click)="closeModal()" *ngIf="showVideoTour && isMobile" class="backdrop bg-zinc-400" [ngClass]="{'requires-no-scroll': noScroll}">
-  <ws-app-tour-video [videoProgressTime]="videoProgressTime" (emitedValue)="emitFromVideo($event)" [showVideoTour]="showVideoTour" [isMobile]="isMobile"></ws-app-tour-video>
+<div (click)="closeModal()" *ngIf="showVideoTour && isMobile" class="backdrop bg-zinc-400"
+  [ngClass]="{'requires-no-scroll': noScroll}">
+  <ws-app-tour-video [videoProgressTime]="videoProgressTime" (emitedValue)="emitFromVideo($event)"
+    [showVideoTour]="showVideoTour" [isMobile]="isMobile" [showOnlyIgotKarmayogi]="showOnlyIgotKarmayogi">
+  </ws-app-tour-video>
   <!-- <div *ngIf="showVideoTour && isMobile" class="video-tour-mobile">
     <div class="flex tour-video-container">
       <div class="video-header-row-mobile">

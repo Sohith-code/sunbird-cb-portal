@@ -189,8 +189,8 @@ export class InitService {
       || href.includes('&preview=true')
       || href.includes('editMode=true')
       || window.location.href.includes('/helpcenter')
-      || window.location.href.includes('/certs') 
-      || window.location.href.includes('/achievements') 
+      || window.location.href.includes('/certs')
+      || window.location.href.includes('/achievements')
       || window.location.href.includes('/crp/')
     if (!isPublicPreviewOrCreator) {
       await this.globalConfigData()
@@ -248,7 +248,7 @@ export class InitService {
         window.location.href.includes('/viewer') || window.location.href.includes('/helpcenter')
       )
     ) {
-      this.logFirstLogin()
+      await this.logFirstLogin()
     }
     return true
   }
@@ -418,7 +418,6 @@ export class InitService {
         inProgress: (userEventEnrolmentInfo.eventsEnrolled ?? 0) - (userEventEnrolmentInfo.eventsAttended ?? 0),
         learningHours: userEventEnrolmentInfo.hoursSpentOnEvents ?? 0,
       }
-      debugger
       if (res && res.result && res.result.userCourseEnrolmentInfo) {
         const badgeCount: any = res.result.badgeCount
         userCourseEnrolmentInfo = res.result.userCourseEnrolmentInfo
@@ -427,7 +426,7 @@ export class InitService {
         userCourseEnrolmentInfo['karmaPoints'] = userCourseEnrolmentInfo['karmaPoints'] + (userExternalCourseEnrolmentInfo['karmaPoints'] || 0)
         userCourseEnrolmentInfo['timeSpentOnCompletedCourses'] = userCourseEnrolmentInfo['timeSpentOnCompletedCourses'] + (userExternalCourseEnrolmentInfo['timeSpentOnCompletedCourses'] || 0) + (eventEnrolmentCount['learningHours'] || 0)
         userCourseEnrolmentInfo['certificatesIssued'] = userCourseEnrolmentInfo['certificatesIssued'] + (userExternalCourseEnrolmentInfo['certificatesIssued'] || 0) + (eventEnrolmentCount['certificate'] || 0)
-        userCourseEnrolmentInfo['coursesInProgress'] = userCourseEnrolmentInfo['coursesInProgress'] + (userExternalCourseEnrolmentInfo['coursesInProgress'] || 0)+ (eventEnrolmentCount['inProgress'] || 0)
+        userCourseEnrolmentInfo['coursesInProgress'] = userCourseEnrolmentInfo['coursesInProgress'] + (userExternalCourseEnrolmentInfo['coursesInProgress'] || 0) + (eventEnrolmentCount['inProgress'] || 0)
         if (userCourseEnrolmentInfo.addinfo && Object.keys(userCourseEnrolmentInfo.addinfo).length > 0) {
           if (Object.keys(userExternalCourseEnrolmentInfo).length > 0
             && userExternalCourseEnrolmentInfo.addinfo
@@ -525,21 +524,39 @@ export class InitService {
     localStorage.setItem('telemetrySessionId', uuid())
   }
 
-  private logFirstLogin() {
+  private async logFirstLogin(): Promise<void> {
     const firstLoginUrl = this.domainConfSvc.getApiUrl('user', 'firstLogin', '/apis/proxies/v8/login/entry')
     if (!firstLoginUrl) {
       console.warn('First login API is disabled')
       return
     }
-    if (!localStorage.getItem('firsLogin')) {
-      this.http.get<any>(firstLoginUrl).pipe(map((res: any) => {
-        if (res && res.result) {
-          this.configSvc.isNewUser = !res.result.last_login
-          localStorage.setItem('firsLogin', 'true')
-        }
-      })).toPromise()
+    const isFirstEverLogin = !localStorage.getItem('firsLogin')
+    try {
+      const res: any = await firstValueFrom(this.http.get<any>(firstLoginUrl))
+      if (res && res.result && isFirstEverLogin) {
+        this.configSvc.isNewUser = this.resolveIsNewUser(res.result)
+        localStorage.setItem('firsLogin', 'true')
+      }
+    } catch (e) {
+      // non-fatal: the greeting falls back to "Welcome Back"
+      console.error('InitService: login/entry failed', e)
     }
   }
+  /**
+   * A first-ever login used to be signalled by login/entry omitting `last_login`. The backend
+   * now always returns both timestamps and marks a first login by `first_login === last_login`.
+   * The missing-`last_login` case is kept as a fallback so an older backend still works.
+   * Compared as strings because the timestamps are epoch millis that may arrive as either type.
+   */
+  private resolveIsNewUser(result: any): boolean {
+    const lastLogin = result?.last_login
+    if (!lastLogin) {
+      return true
+    }
+    const firstLogin = result?.first_login
+    return !!firstLogin && String(firstLogin) === String(lastLogin)
+  }
+
   private async fetchStartUpDetails(): Promise<any> {
     let apiResponse: any
     if (this.configSvc.instanceConfig) {

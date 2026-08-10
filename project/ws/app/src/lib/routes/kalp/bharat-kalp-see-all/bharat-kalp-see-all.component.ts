@@ -33,6 +33,7 @@ export class BharatKalpSeeAllComponent implements OnInit {
 
   /* Content type tabs */
   activeTabIndex = 0
+  activetabKey = ''
 
   /* Search */
   searchText = ''
@@ -64,6 +65,26 @@ export class BharatKalpSeeAllComponent implements OnInit {
   private _getStatus(identifier: string): 'Not Started' | 'In Progress' | 'Completed' {
     if (!this.enrollmentMap.hasOwnProperty(identifier)) return 'Not Started'
     return this.enrollmentMap[identifier] >= 100 ? 'Completed' : 'In Progress'
+  }
+
+
+  private _loadEnrollmentForExt(allIds: string[]): void {
+    const userId = (this.configSvc as any)?.userProfile?.userId
+    if (!allIds.length || !userId) return
+    allIds.forEach(id => {
+      this.http.get<any>(
+        `/apis/proxies/v8/cios-enroll/v1/readby/useridcourseid/${id}`,
+      ).pipe(catchError(() => of(null)))
+        .subscribe(res => {
+          const map: { [id: string]: number } = {};
+          ([res?.result?.courses || []]).forEach((c: any) => {
+            const id = c.contentId
+            if (id) map[id] = c.completionPercentage ?? 0
+          })
+          this.enrollmentMap = map
+        })
+    })
+
   }
 
   private _loadEnrollment(allIds: string[]): void {
@@ -162,6 +183,10 @@ export class BharatKalpSeeAllComponent implements OnInit {
     return this.contentTypeTabs[this.activeTabIndex]?.key === 'resources'
   }
 
+  get isActiveExternalTab(): boolean {
+    return this.contentTypeTabs[this.activeTabIndex]?.key === 'extCourses'
+  }
+
   /* Get content_ids for current week + content type */
   private _getContentIds(): string[] {
     const key = this.contentTypeTabs[this.activeTabIndex]?.key
@@ -180,6 +205,45 @@ export class BharatKalpSeeAllComponent implements OnInit {
     /* Specific week */
     const wd = this.weeksData.find((w: any) => w.id === `week_${this.selectedWeek}`)
     return wd?.content_ids?.[key] || []
+  }
+
+  _fetchExtContent(): void {
+    this.currentPage = 0
+    this.allCards = []
+    const ids = this._getContentIds()
+    if (!ids.length) return
+
+    this.loading = true
+    this.http.post<any>('/apis/proxies/v8/cios/v1/search/content', {
+      filterCriteriaMap: {
+        "contentPartner.isActive": true,
+        contentId: ids,
+      },
+      requestedFields: [],
+      pageNumber: 0,
+      pageSize: ids.length + 10,
+      orderBy: "createdOn",
+      searchString: "",
+      facets: [
+        "topic",
+        "contentPartner.contentPartnerName",
+        "competencies_v6.competencyAreaName",
+        "competencies_v6.competencyThemeName",
+        "competencies_v6.competencySubThemeName"
+      ],
+    }).pipe(catchError(() => of(null)))
+      .subscribe(res => {
+        const content: any[] = res?.data || []
+        this.allCards = content.map((c: any, i: number) => ({
+          content: c,
+          cardSubType: 'standard' as 'standard',
+          context: { pageSection: 'bharat-kalp-see-all', position: i },
+          stateData: {},
+        }))
+        this.loading = false
+        /* Load enrollment data to enable status filtering */
+        this._loadEnrollmentForExt(content.map((c: any) => c.contentId).filter(Boolean))
+      })
   }
 
   _fetchContent(): void {
@@ -213,8 +277,14 @@ export class BharatKalpSeeAllComponent implements OnInit {
   onWeekChange(event: Event): void {
     this.selectedWeek = +(event.target as HTMLSelectElement).value
     this.activeTabIndex = 0 /* tab set can change per week — reset to the first visible tab */
+    this.activetabKey = ''
     this._fetchContent()
   }
+
+  onCardContentDataExt(content: any): void {
+    this.router.navigate(['/app/toc/ext/', content?.contentId], {})
+  }
+
 
   onStatusSelect(status: string): void { this.selectedStatus = status; this.currentPage = 0 }
 
@@ -222,7 +292,12 @@ export class BharatKalpSeeAllComponent implements OnInit {
     this.activeTabIndex = index
     /* Status pills are hidden for Resources — reset so a stale filter doesn't silently hide all cards */
     if (this.isActiveTabResources) this.selectedStatus = 'All'
-    this._fetchContent()
+    this.activetabKey = this.contentTypeTabs[this.activeTabIndex]?.key || ''
+    if (this.isActiveExternalTab) {
+      this._fetchExtContent()
+    } else {
+      this._fetchContent()
+    }
   }
 
   trackTabKey(_: number, tab: ContentTypeTab): string { return tab.key }
@@ -288,15 +363,15 @@ export class BharatKalpSeeAllComponent implements OnInit {
         primaryCategory: content?.primaryCategory
       }
       history.pushState(history.state, '', this.router.url)
-      this.router.navigate([url], { queryParams:queryParams , state: { sourceUrl: this.router.url }})
-    }else{
-    if (!content?.identifier) return
-    const qp: any = {}
-    if (content.batchId) qp['batchId'] = content.batchId
-    this.router.navigate(
-      ['/app/toc', content.identifier, 'overview'],
-      { queryParams: qp, state: { sourceUrl: this.router.url } }
-    )
+      this.router.navigate([url], { queryParams: queryParams, state: { sourceUrl: this.router.url } })
+    } else {
+      if (!content?.identifier) return
+      const qp: any = {}
+      if (content.batchId) qp['batchId'] = content.batchId
+      this.router.navigate(
+        ['/app/toc', content.identifier, 'overview'],
+        { queryParams: qp, state: { sourceUrl: this.router.url } }
+      )
     }
   }
 

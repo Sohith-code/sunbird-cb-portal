@@ -52,7 +52,7 @@
 }
 
 <!-- Leaderboard card -->
-@if (!loading && rank1) {
+@if (!loading) {
 <div class="klb-card" [class.klb-card--no-scroll]="showOverlay" [class.klb-card--embedded]="embedded()" role="region"
   [attr.aria-labelledby]="embedded() ? 'klb-section-title' : 'klb-card-title'">
   <!-- ── Celebration overlay (auto-dismisses after 5 s; click to dismiss early) ── -->
@@ -99,6 +99,8 @@
 
   <div class="klb-divider"></div>
   }
+
+  @if (rank1) {
 
   <!-- ── Section heading ──────────────────────────────────────── -->
   <div class="klb-section-head" role="region" aria-label="Leaderboard period">
@@ -265,5 +267,13 @@
 </div><!-- /klb-myrank -->
 }
 
+} @else {
+<!-- ── Empty state: the leaderboard has no ranked learners yet ─────────── -->
+<div class="klb-empty" role="status">
+  <img src="/assets/icons/home-v2/missing-data.svg" alt="" class="klb-empty-icon" aria-hidden="true">
+  <p class="klb-empty-title">{{ leaderboardUnavailableTitle }}</p>
+  <p class="klb-empty-desc">{{ leaderboardUnavailableMessage }}</p>
+</div>
+}
 </div><!-- /klb-card -->
 }

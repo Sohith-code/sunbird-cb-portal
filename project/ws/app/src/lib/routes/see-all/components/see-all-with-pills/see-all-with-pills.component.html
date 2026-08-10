@@ -13,6 +13,7 @@
         </div>
         <div class="flex flex-row flex-wrap content-container" *ngIf="tabResults.length > 0">
             <mat-tab-group animationDuration="0ms" class="mat-tab-labels w-full strips-tabgroup" dynamicHeight
+                [class.for-you-responsive-tabgroup]="isForYouResponsiveLayout"
                 [selectedIndex]="dynamicTabIndex"
                 (selectedIndexChange)="tabClicked($event, seeAllPageConfig, seeAllPageConfig.key, 0)">
                 <mat-tab *ngFor="let tab of tabResults; let last = last;let tabIndex = index" [label]="tab?.label">
@@ -33,15 +34,17 @@
                             </ng-container>
                         </div>
                         <div class="flex flex-row flex-wrap justify-start content-container mt-4 mb-10"
+                            [class.for-you-responsive-card-grid]="isForYouResponsiveTab(tab?.value)"
+                            [class.continue-learning-responsive-card-grid]="isContinueLearningResponsivePill(tab)"
                             *ngIf=" tab?.pillsData[getSelectedPillIndex(tab ,tabIndex)]?.widgets?.length">
                             <ng-container *ngIf="seeAllPageConfig?.key === 'continueLearning'">
-                                <div class="mr-5 mb-5"
+                                <div class="continue-learning-card-item mr-5 mb-5"
                                     *ngFor="let c of tab?.pillsData[getSelectedPillIndex(tab ,tabIndex)]?.widgets.slice(0, pageSize)">
                                     <sb-uic-cards [widgetData]="c.widgetData"> </sb-uic-cards>
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="seeAllPageConfig?.key !== 'continueLearning'">
-                                <div class="mr-2 mb-5"
+                                <div class="for-you-card-item mr-2 mb-5"
                                     *ngFor="let c of tab?.pillsData[getSelectedPillIndex(tab ,tabIndex)]?.widgets">
                                     <ws-widget-card-content-v2 [widgetData]="c.widgetData"> </ws-widget-card-content-v2>
                                 </div>

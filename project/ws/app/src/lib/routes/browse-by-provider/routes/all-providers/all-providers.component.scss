@@ -48,22 +48,29 @@
         overflow: hidden;
         justify-content: space-between;
 
+        @media (max-width:1024px) {
+            flex-wrap: nowrap;
+            align-items: center;
+        }
 
         .search_box_inner {
             max-width: 585px;
             float: left;
 
-            @media (max-width:768px) {
-                width: 75%;
-                max-width: 75%;
+            @media (max-width:1024px) {
+                flex: 1 1 auto;
+                width: auto;
+                max-width: 100%;
+                min-width: 0;
             }
 
             .search_box_main {
                 width: 100%;
                 max-width: 585px;
 
-                @media (max-width:768px) {
+                @media (max-width:1024px) {
                     max-width: 100%;
+                    min-width: 0;
                 }
 
                 mat-form-field .mat-form-field-wrapper .mat-form-field-flex .mat-form-field-infix{
@@ -87,18 +94,39 @@
             // width: 210px;
             box-sizing: border-box;
 
-            @media (max-width:768px) {
-                // width: 49%;
-                width: 20%;
+            @media (max-width:1024px) {
+                width: auto;
+                flex: 0 0 auto;
                 display: flex;
                 align-items: center;
                 margin-right: 8px;
+                // search_box_inner carries mb-4 (1rem bottom margin); matching it here keeps
+                // both flex items' margin-box heights equal so align-items:center truly
+                // centers the sort chip against the search box instead of nudging it up.
+                margin-bottom: 1rem;
             }
             .item {
                 background: white;
                 width: 100%;
                 padding: 0px 16px;
                 border-radius: 52px;
+                white-space: nowrap;
+
+                @media (max-width:1024px) {
+                    padding: 0px 12px;
+                    // pin to the same 40px box-model height as .search-field so the chip's
+                    // own box lines up center-to-center with the search box, not just its
+                    // outer wrapper — height (not min-height) keeps it pixel-exact.
+                    display: flex;
+                    align-items: center;
+                    height: 40px;
+                    box-sizing: border-box;
+                }
+
+                .sort-menu {
+                    white-space: nowrap;
+                }
+
                 .mat-form-field {
                     // background-color: #f0f3f4;
                     // border:1px solid rgba(0, 0, 0, 0.08);
@@ -106,7 +134,7 @@
                     // border-radius: 4px 4px;
                     // box-sizing: border-box;
 
-                    @media (max-width:768px) {
+                    @media (max-width:1024px) {
                         width: 100%;
                     }
                 }
@@ -156,6 +184,7 @@
 }
 .sort-menu {
     width: 100% !important;
+    white-space: nowrap;
     }
 .search-wrapper {
     mat-icon {
@@ -170,8 +199,12 @@
         border-radius: 52px;
         background: #FFFFFF;
         border: 1px solid #00000014;
-        @media (max-width:768px) {
-            width:  284px;
+        @media (max-width:1024px) {
+            // account for the ml-2 (8px) left margin so the field never overflows its wrapper
+            width: calc(100% - 8px);
+            // include padding/border inside the declared 40px height so the field's real
+            // rendered height matches .item's height exactly (was ~26px taller without this)
+            box-sizing: border-box;
         }
     }
 }

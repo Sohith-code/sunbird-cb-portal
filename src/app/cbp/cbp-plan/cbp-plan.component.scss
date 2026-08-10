@@ -1,9 +1,11 @@
 .main-container {
     max-width: 1200px;
 }
+
 .font-semibold {
-    font-weight: 600!important;
+    font-weight: 600 !important;
 }
+
 .network-inner {
     overflow: hidden;
 }
@@ -21,6 +23,7 @@
 
 .left {
     width: 34%;
+    padding-left: 2px;
 }
 
 .right {
@@ -30,6 +33,7 @@
 .full {
     width: 100%;
 }
+
 @media only screen and (max-width: 768px) {
     .main-container {
         margin-top: 0;
@@ -37,17 +41,25 @@
     }
 
     .main-container-without-mobile-header {
-      margin-top: 0px;
-      flex-direction: column;
+        margin-top: 0px;
+        flex-direction: column;
     }
+
     .left {
         width: 100%;
         padding: 0 16px;
         box-sizing: border-box;
     }
+
     .right {
         width: 100%;
         padding: 0 16px;
         box-sizing: border-box;
+    }
+}
+
+@media only screen and (min-width: 577px) and (max-width: 768px) {
+    :host-context(.margin186) .main-container {
+        margin-top: 84px;
     }
 }

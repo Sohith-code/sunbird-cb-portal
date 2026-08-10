@@ -42,6 +42,10 @@ export class KarmaLeaderboardV2Component implements OnInit {
   readonly tooltipText =
     'The learner leaderboard is calculated based on the Karma Points earned in a month and updated on the 1st of every month.'
 
+  leaderboardUnavailableTitle = 'Leaderboard Not Yet Available'
+  leaderboardUnavailableMessage =
+    'The learner leaderboard is calculated based on the Karma Points earned in a month and updated on the 1st of every month.'
+
   private readonly homePageSvc = inject(HomePageService)
   private readonly configSvc = inject(ConfigurationsService)
   private readonly userProfileSvc = inject(UserProfileService)
@@ -59,7 +63,20 @@ export class KarmaLeaderboardV2Component implements OnInit {
       }
     } catch (_e) { /* ignore */ }
 
+    this.setLeaderboardUnavailableCopy()
     this.loadLeaderboard()
+  }
+
+  private setLeaderboardUnavailableCopy() {
+    const navSections = (this.configSvc.instanceConfig
+      && this.configSvc.instanceConfig.leftNavBar
+      && this.configSvc.instanceConfig.leftNavBar.navSections) || []
+    const achievements = navSections.find((section: any) => section.sectionKey === 'my_achievements')
+    if (!achievements) {
+      return
+    }
+    this.leaderboardUnavailableTitle = achievements.leaderboardUnavailableMessageTitle || this.leaderboardUnavailableTitle
+    this.leaderboardUnavailableMessage = achievements.leaderboardUnavailableMessage || this.leaderboardUnavailableMessage
   }
 
   get isCurrentUserInTop3(): boolean {

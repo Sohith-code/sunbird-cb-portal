@@ -27,10 +27,10 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatTabChangeEvent } from '@angular/material/tabs'
 
 @Component({
-    selector: 'ws-app-settings',
-    templateUrl: './settings.component.html',
-    styleUrls: ['./settings.component.scss'],
-    standalone: false
+  selector: 'ws-app-settings',
+  templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.scss'],
+  standalone: false
 })
 export class SettingsComponent implements OnInit, OnDestroy {
   @ViewChild('successToast', { static: true }) successToast!: ElementRef<any>

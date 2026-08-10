@@ -10,7 +10,7 @@
   width: 294px;
   max-width: 294px;
   max-height: 80vh;
-  padding: 0 24px 10px;
+  padding: 0 16px 10px;
   cursor: default;
   user-select: none;
 
@@ -35,6 +35,7 @@
 .klb-card--no-scroll {
   overflow-y: hidden;
 }
+
 .klb-card--embedded {
   width: 294px;
   max-width: 100%;
@@ -150,6 +151,7 @@
   font-weight: 700;
   color: var(--text-bandw-black-display);
   margin-bottom: 16px;
+  font-family: 'Noto Sans';
 }
 
 .klb-top-desc {
@@ -157,6 +159,7 @@
   color: var(--text-bandw-black-captions);
   line-height: 1.5;
   margin: 0;
+  font-family: 'Noto Sans';
 }
 
 // ── Header bar ───────────────────────────────────────────────
@@ -186,7 +189,7 @@
 
 .klb-earned-label {
   font-size: 12px;
-  color: var(--text-bandw-black-captions);
+  color: var(--text-bandw-black-display);
   line-height: 1.2;
 }
 
@@ -249,10 +252,11 @@
 }
 
 .klb-desc {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-bandw-black-captions);
   margin: 4px 0 10px;
   line-height: 1.4;
+  font-family: 'Noto Sans';
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -943,4 +947,40 @@
   border-radius: 4px;
   margin-left: auto;
   flex-shrink: 0;
+}
+// ── Empty state: shown in place of the leaderboard when nobody is ranked yet ──
+.klb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  // No side padding: .klb-card already holds 24px each side for the header above, and doubling
+  // it here wrapped the message far earlier than it needed to.
+  padding: 48px 0;
+  text-align: center;
+}
+
+.klb-empty-icon {
+  width: 120px;
+  max-width: 60%;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.klb-empty-title {
+  margin: 0;
+  font-size: var(--font-size-body-1);
+  font-weight: 600;
+  color: var(--text-bandw-black-title);
+  font-family: 'Noto Sans';
+}
+
+.klb-empty-desc {
+  margin: 0;
+  font-size: var(--font-size-label-1);
+  font-weight: 400;
+  font-family: 'Noto Sans';
+  line-height: 1.5;
+  color: var(--text-bandw-black-captions);
 }

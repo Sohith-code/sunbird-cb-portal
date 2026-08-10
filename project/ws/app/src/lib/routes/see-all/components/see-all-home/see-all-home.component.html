@@ -2,13 +2,14 @@
     <ng-container>
         <div class="flex flex-row page-header margin-top-l margin-bottom-l">
             <div *ngIf="seeAllPageConfig && seeAllPageConfig.title">
-                {{translateLabels(seeAllPageConfig.title, 'seeAllHome')}}
+                {{seeAllPageConfig.disableTranslate ? seeAllPageConfig.title : translateLabels(seeAllPageConfig.title, 'seeAllHome')}}
             </div>
         </div>
-        <div class="flex flex-row flex-wrap content-container" infinite-scroll [infiniteScrollDistance]="scrollDistance"
-            [infiniteScrollThrottle]="throttle" (scrolled)="onScrollEnd()" *ngIf="tabResults.length === 0">
+        <div class="flex flex-row flex-wrap content-container" [class.course-card-grid]="!isCoisContent" infinite-scroll
+            [infiniteScrollDistance]="scrollDistance" [infiniteScrollThrottle]="throttle" (scrolled)="onScrollEnd()"
+            *ngIf="tabResults.length === 0">
             <ng-container *ngIf="!isCoisContent">
-                <div class="mr-2 mb-5" *ngFor="let c of contentDataList">
+                <div class="course-card-item mr-2 mb-5" *ngFor="let c of contentDataList">
                     <ws-widget-card-content-v2 [widgetData]="c.widgetData"> </ws-widget-card-content-v2>
                 </div>
             </ng-container>
@@ -47,9 +48,10 @@
                             </div>
                         </div>
                     </ng-container>
-                    <div class="flex flex-row flex-wrap content-container mt-10 mb-10">
+                    <div class="flex flex-row flex-wrap content-container mt-10 mb-10"
+                        [class.course-card-grid]="!isCoisContent">
                         <ng-container *ngIf="!isCoisContent">
-                            <div class="mr-2 mb-5" *ngFor="let c of tab?.widgets">
+                            <div class="course-card-item mr-2 mb-5" *ngFor="let c of tab?.widgets">
                                 <ws-widget-card-content-v2 [widgetData]="c.widgetData"> </ws-widget-card-content-v2>
                             </div>
                         </ng-container>

@@ -506,6 +506,46 @@
     }
   }
 
+  @media (max-width: 599px) {
+    .custom-paginator ::ng-deep {
+      .mat-mdc-paginator-container {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        gap: 4px;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+
+      .mat-mdc-paginator-page-size {
+        justify-content: center;
+        width: 100%;
+        margin-right: 0;
+      }
+
+      .mat-mdc-paginator-range-actions {
+        justify-content: center;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .mat-mdc-paginator-range-label {
+        flex: 0 0 auto;
+        min-width: 44px;
+        margin: 0 8px;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .mat-mdc-paginator-range-actions .mat-mdc-icon-button {
+        flex: 0 0 40px;
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+      }
+    }
+  }
+
   // Specific fix for overlap issue between 576px and 1135px
   @media (min-width: 576px) and (max-width: 1135px) {
     padding-top: 80px !important; // Increased to 80px to clear nav bar

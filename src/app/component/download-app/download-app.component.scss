@@ -3,6 +3,11 @@
 @use '@sunbird-cb/design-system/src/styles/_ws-mixins' as *;
 
 
+.download-app-dialog {
+    width: 100%;
+    background-color: #fff;
+}
+
 .download-app {
     display: flex;
     flex-direction: row;
@@ -198,5 +203,22 @@
 
     .vertical-image img {
         height: 241px;
+    }
+}
+
+// Mobile landscape: small viewport height + landscape orientation distinguishes phones
+// rotated sideways from tablets/desktops, which stay tall even in landscape.
+@media only screen and (max-height: 500px) and (orientation: landscape) {
+    .download-app-dialog {
+        max-height: 87vh;
+        overflow: auto;
+    }
+
+    .right-side {
+        height: 258px;
+    }
+
+    .mobile-download {
+        overflow: auto;
     }
 }

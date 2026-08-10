@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
+import { MatTooltipModule } from '@angular/material/tooltip'
 import { MatChipsModule } from '@angular/material/chips'
 import { MatDividerModule } from '@angular/material/divider'
 import { TranslateModule } from '@ngx-translate/core'
@@ -64,6 +65,7 @@ interface SearchCategoryItem {
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
+    MatTooltipModule,
     MatChipsModule,
     MatDividerModule,
     MatListModule
@@ -95,6 +97,11 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
   searchLocale = signal('en');
   preferredLanguages = signal('');
   searchCategoriesEnabled = true;
+  // global-config -> components.recentSearch.enabled / components.allSearchResults.enabled - the
+  // same keys the v3 input reads. Both default to true when absent, so a tenant whose config
+  // predates them keeps the current behaviour
+  recentSearchesEnabled = true;
+  allSearchResultsEnabled = true;
 
   // Constants
   readonly SAKSHAMAI_ICON_LOADER = '/assets/images/sakshamAI/saksham_ai_loader.gif';
@@ -186,6 +193,11 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
   }
 
   filterCategoriesByConfig() {
+    // recentRead is ANDed in the same way v3's showRecentSearch does it - with no api there is
+    // nothing to list, so the section stays hidden either way
+    this.recentSearchesEnabled = this.domainConfSvc.isConfigEnabled('components.recentSearch', 'enabled')
+      && this.domainConfSvc.isApiEnabled('search', 'recentRead')
+    this.allSearchResultsEnabled = this.domainConfSvc.isConfigEnabled('components.allSearchResults', 'enabled')
     this.searchCategoriesEnabled = this.domainConfSvc.isSearchCategoriesEnabled()
     if (this.domainConfSvc.getSearchCategoriesConfig()) {
       this.categories = this.categories.filter(cat => {
@@ -196,6 +208,14 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
 
   isCategoryEnabled(categoryValue: string): boolean {
     return this.domainConfSvc.isSearchCategoryEnabled(categoryValue)
+  }
+
+  // The dropdown is just chrome around three optional sections. With all of them switched off in
+  // global-config - or simply empty - it used to render as a bare white box under the input
+  get hasSearchPanelContent(): boolean {
+    return (this.searchCategoriesEnabled && this.categories.length > 0)
+      || (this.recentSearchesEnabled && !!this.recentSearches?.length)
+      || (this.allSearchResultsEnabled && this.allSearchResults().length > 0)
   }
 
   clearSearchTextElement() {
@@ -276,6 +296,10 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
   }
 
   async updateRecentSearchQuery(query: any) {
+    if (!this.recentSearchesEnabled) {
+      this.processRecentSearchText(query)
+      return
+    }
     if (query) {
       const reqBody = {
         nlpSearchQuery: query?.nlp_search_query,
@@ -293,6 +317,9 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
   }
 
   async createRecent(data: any) {
+    if (!this.recentSearchesEnabled) {
+      return
+    }
 
     // AFTER NLW NEED TO ENABLE
     const reqBody = {
@@ -308,6 +335,10 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
   }
 
   readRecent() {
+    if (!this.recentSearchesEnabled) {
+      this.recentSearches = ''
+      return undefined
+    }
     // AFTER NLW NEED TO ENABLE
     return this.searchV3Service.recentRead().subscribe((res: any) => {
       if (res) {
@@ -496,6 +527,9 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
   }
 
   recentDeleteByUserId() {
+    if (!this.recentSearchesEnabled) {
+      return undefined
+    }
     return this.searchV3Service.recentDeleteByUser().subscribe((result: any) => {
       if (result && result.responseCode === 'OK') {
         this.readRecent()
@@ -504,6 +538,9 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
   }
 
   recentDeleteByTimeStamp(id: any) {
+    if (!this.recentSearchesEnabled) {
+      return undefined
+    }
     return this.searchV3Service.recentDeleteByTime(id).subscribe((result: any) => {
       if (result) {
         this.readRecent()
@@ -589,6 +626,12 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
   }
 
   async searchFromQuery(query: string) {
+    // This is the type-ahead behind the "All Search Results" list and fires on every keystroke,
+    // so bail before the request when the list is switched off
+    if (!this.allSearchResultsEnabled) {
+      this.allSearchResults.set([])
+      return
+    }
     let courseSearchResult: any
     const searchRequest = new SearchV4Request([])
     searchRequest.request.query = query
@@ -751,12 +794,12 @@ export class SearchInputHomeV4Component implements OnInit, OnDestroy {
 
   openSearchTemplateF() {
     this.openSearchTemplate.set(true)
-    if (!this.hasReadRecentBeenCalled) {
-      this.hasReadRecentBeenCalled = false
-    }
-
-    if (!this.selectedSearchCategory()) {
-      // Optional: search from query
+    // load recent searches once per session, only when the section and the recentRead API are
+    // enabled in global-config. Without this the list only ever appeared after a search had been
+    // submitted, because searchInNLP was the sole caller of readRecent
+    if (!this.hasReadRecentBeenCalled && this.recentSearchesEnabled) {
+      this.readRecent()
+      this.hasReadRecentBeenCalled = true
     }
   }
 

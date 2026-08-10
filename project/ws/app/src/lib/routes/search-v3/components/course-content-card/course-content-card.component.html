@@ -50,7 +50,7 @@
             <div class="course-content pl-0 md:pl-4">
                 <ng-container
                     *ngIf="isCardElementEnabled('contentType') && (content?.contentType === 'Resource' || content?.contentType === 'Course' || content?.contentType === 'Module' || content?.contentType === 'Event' || content?.topic)">
-                    <div class="flex justify-between items-center">
+                    <div class="card-meta-row flex justify-between items-center">
                         <div class="course-type font-normal">
                             <mat-icon class="document-icon"
                                 *ngIf="content?.mimeType === 'application/json' || content?.mimeType === 'application/quiz'">

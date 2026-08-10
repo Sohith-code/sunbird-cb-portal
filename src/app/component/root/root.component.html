@@ -45,7 +45,8 @@
     }
     <div class=""
       [ngClass]="((isXSmall$ | async) === true || !showMenuBardetails || (isTabView$ | async) === true) ? 'w-full' : (sidebarPushesContent() ? 'main-content-on-menubar-open' : 'main-content-on-menubar-close')">
-      <!-- <app-tour *ngIf="loggedinUser && !showTour && !disableHeightOnTop && isDialogEnabled('tour')"></app-tour> -->
+      <app-tour *ngIf="loggedinUser && !showTour && !disableHeightOnTop && isDialogEnabled('tour')"
+        [showOnlyIgotKarmayogi]="true"></app-tour>
       <app-no-connection-v2></app-no-connection-v2>
       <mat-progress-bar mode="indeterminate" color="warn" class="route-change" *ngIf="routeChangeInProgress">
       </mat-progress-bar>
@@ -116,7 +117,8 @@
             'mt-4': !mobileTopHeaderVisibilityStatus && !showHubs && !viewerPage && (isXSmall$ | async) === false,
             'container-balanced': !isHomePage() && !showFullScreen(),
             'home-content': showMenuBardetails && isHomePage() && !showFullScreen(),
-            'w-full': !showMenuBardetails || showFullScreen()
+            'w-full': !showMenuBardetails || showFullScreen(),
+            'full-width-mobile-route': isFullWidthMobileRoute()
             }">
           <router-outlet></router-outlet>
         </div>

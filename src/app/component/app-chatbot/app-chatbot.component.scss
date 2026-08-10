@@ -9,6 +9,10 @@
   justify-content: center;
   width: auto;
   z-index: 999999999;
+  /* The container and its wrappers are invisible boxes; the drag transform moves
+     only the inner icon, so these would keep swallowing clicks meant for the page
+     underneath. Pointer events are re-enabled on the visible icons below. */
+  pointer-events: none;
 }
 
 .chatbot-icon-ai {
@@ -19,11 +23,17 @@
   -o-animation-delay: 1s;
   animation-delay: 1s;
   transition: 1s ease;
+  pointer-events: none;
+}
+
+.draggable-icon {
+  pointer-events: none;
 }
 
 .chatbot-icon {
   position: absolute;
   right: -107px;
+  pointer-events: auto;
   -moz-animation-delay: 1s;
   -webkit-animation-delay: 1s;
   -o-animation-delay: 1s;
@@ -654,11 +664,18 @@
 //   background-color: rgba(255, 255, 255, 0.9); /* Adjust opacity here */
 //   z-index: 1; /* Make sure the opacity is above the background image */
 // }
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  .cb-footer-wrapper {
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+  }
+}
 
-.cb-footer-wrapper {
-  position: absolute;
-  width: 100%;
-  bottom: 60px;
+        .cb-footer-wrapper {
+          position: absolute;
+          width: 100%;
+      bottom: 0px;
 }
 
 .my-5px {
@@ -773,6 +790,8 @@
   overflow: hidden;
   /* Glow Blur */
   filter: blur(50px);
+  /* Purely decorative glow - must never intercept clicks */
+  pointer-events: none;
 }
 
 .animated-border-box:before,
@@ -831,6 +850,9 @@
 .icon-container {
   height: 70px;
   width: 70px;
+  /* The only hit area of the floating assistant: matches the visible icon exactly.
+     Also the cdkDrag handle, so it must stay interactive. */
+  pointer-events: auto;
   /* background-color: #1E5AC2;
 
   border-radius: 48px 48px 0 48px;

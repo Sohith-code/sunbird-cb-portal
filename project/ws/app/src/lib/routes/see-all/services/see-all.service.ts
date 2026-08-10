@@ -24,6 +24,7 @@ const API_END_POINTS = {
 export class SeeAllService {
   private removeFilter = new Subject<any>()
   getSeeAllConfig: any = null
+  seeAllTabsConfig: any = null
   /**
    * Observable string streams
    */
@@ -102,6 +103,24 @@ export class SeeAllService {
       this.getSeeAllConfig = await this.formSvc.formConfigData(requestData, pageType, pageSubType).toPromise()
     }
     return of(this.getSeeAllConfig).toPromise()
+  }
+
+  async getSeeAllTabsConfig(): Promise<any> {
+    if (!this.seeAllTabsConfig) {
+      const clientVersion = _.get(this.formSvc.configSvc, ['globalConfig', 'formClientVersion', 'home']) || 1.0
+      const requestData: any = {
+        'request': {
+          'type': 'page',
+          'subType': 'home',
+          'portal': 'portal',
+          'clientVersion': clientVersion,
+        },
+      }
+      const response: any = await this.formSvc.formConfigReadData(requestData).toPromise().catch(() => null)
+      const data = _.get(response, 'result.data') || _.get(response, 'result.form.data')
+      this.seeAllTabsConfig = _.get(data, 'seeAllTabsConfig') || {}
+    }
+    return this.seeAllTabsConfig
   }
 
   searchV6(req: NSSearch.ISearchV6Request): Observable<NSSearch.ISearchV6ApiResultV2> {

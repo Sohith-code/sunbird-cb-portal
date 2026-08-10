@@ -199,6 +199,12 @@ export class SearchInputHomeComponent implements OnInit, OnChanges {
       && this.domainConfSvc.isApiEnabled('search', 'recentRead')
   }
 
+  // all-search-results (type-ahead) visibility: components.allSearchResults.enabled in
+  // global-config (default true) - same key the v4 input reads
+  get showAllSearchResults(): boolean {
+    return this.domainConfSvc.isConfigEnabled('components.allSearchResults', 'enabled')
+  }
+
   autoFilter() {
     if (this.route.snapshot.data.searchPageData) {
       const isAutoCompleteAllowed =

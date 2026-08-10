@@ -24,7 +24,7 @@
         }
 
         <input matInput type="text" role="combobox" class="global-search-input-element" accesskey="S" #searchInput
-          [attr.title]="placeHolder()" id="global-search-input" i18n-placeholder="search content"
+          matTooltipClass="right-nav-tooltip" [matTooltip]="placeHolder()" id="global-search-input" i18n-placeholder="search content"
           [placeholder]="placeHolder()" i18-aria-label aria-label="search content" (focus)="openSearchTemplateF()"
           [formControl]="queryControl" maxlength="100" (input)="loaderSearching.set(true)" autocomplete="off" />
 
@@ -41,12 +41,14 @@
       </button>
     </form>
 
-    <div class="search-container" [hidden]="!openSearchTemplate()">
+    <div class="search-container" [hidden]="!openSearchTemplate() || !hasSearchPanelContent">
       <div class="search-results">
+        <!-- Search categories - global-config: components.searchCategories -->
+        @if (searchCategoriesEnabled && categories.length) {
         <div class="search-categories mb-4">
           <mat-chip-listbox class="mat-chip-list-content" [multiple]="false" [hideSingleSelectionIndicator]="true">
             @for (category of categories; track category.value) {
-            <mat-chip-option [removable]="false" [highlighted]="false" [disableRipple]="true"
+            <mat-chip-option [removable]="false" [highlighted]="false" [disableRipple]="true" [selectable]="false"
               [selected]="category.value === selectedSearchCategory()" (click)="selectSearchCategory(category.value)"
               class="category-chip"
               [ngClass]="{'selected-search-category active': category.value === selectedSearchCategory()}">
@@ -58,9 +60,10 @@
             }
           </mat-chip-listbox>
         </div>
+        }
 
-        <!-- Recent Searches -->
-        @if (recentSearches?.length) {
+        <!-- Recent Searches - global-config: components.recentSearch.enabled -->
+        @if (recentSearchesEnabled && recentSearches?.length) {
         <mat-list>
           <div mat-subheader class="flex justify-between">
             <span class="text-sm recent-search-title font-normal">Recent Searches</span>
@@ -83,8 +86,8 @@
         </mat-list>
         }
 
-        <!-- All Search Results -->
-        @if (allSearchResults() && allSearchResults()?.length > 0) {
+        <!-- All Search Results - global-config: components.allSearchResults.enabled -->
+        @if (allSearchResultsEnabled && allSearchResults() && allSearchResults()?.length > 0) {
         <mat-list>
           <div mat-subheader class="flex justify-between mt-4 mb-1">
             <span class="text-sm recent-search-title font-normal">All Search Results</span>
@@ -106,7 +109,7 @@
         </mat-list>
         }
 
-        @if (allSearchResults().length > 0 && queryControl.value) {
+        @if (allSearchResultsEnabled && allSearchResults().length > 0 && queryControl.value) {
         <div class="see-all-results">
           <a mat-button (click)="updateQuery(queryControl.value || '')">See all the results...</a>
         </div>

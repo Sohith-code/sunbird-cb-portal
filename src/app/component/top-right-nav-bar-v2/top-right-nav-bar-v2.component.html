@@ -4,7 +4,8 @@
   <!-- Notification Bell -->
   @if (item()?.type === 'notificationBell' && rnc.section === 'notification' && rnc.active) {
   <li class="notification-icon flex items-center cursor-pointer mt-2.5">
-    <div #notificationTrigger [matMenuTriggerFor]="menu" class="relative" (click)="onBellClick()" title="Notifications"
+    <div #notificationTrigger [matMenuTriggerFor]="menu" class="relative" (click)="onBellClick()"
+      matTooltipClass="right-nav-tooltip" [matTooltip]="'Notifications'"
       (keydown.enter)="$event.preventDefault(); notificationTrigger.click(); onBellClick();" tabindex="0"
       (keydown.escape)="$event.preventDefault(); notificationTrigger.click();">
       <mat-icon class="bell-icon mt-[5px] text-[rgba(27,76,161,1)]">notifications</mat-icon>
@@ -36,7 +37,7 @@
 
   <!-- Language Select -->
   @if (item()?.type === 'langSelect' && rnc.section === 'language' && rnc.active && isMultiLangEnabled()) {
-  <li class="langdiv flex items-center cursor-pointer">
+  <li class="langdiv flex items-center disabled-lang-select">
     <span class="mob-lang-img flex items-center mx-2 mt-[10px]" role="img" aria-label="Language" title="Language"
       [style.mask-image]="'url(/assets/icons/top-nav/translate_icon.svg)'"
       [style.-webkit-mask-image]="'url(/assets/icons/top-nav/translate_icon_dark.svg)'"

@@ -147,20 +147,35 @@ export class GbSearchService {
     }
     return this.http.post(url, params).toPromise()
   }
+  // getApiUrl returns '' when the api is disabled in global-config, so each of these bails out the
+  // same way nlpSearch does - without the check a disabled api posts to the app's own origin
   recentCreate(req: any): Promise<any> {
     const url = this.domainConfSvc.getApiUrl('search', 'recentCreate', DEFAULT_API_ENDPOINTS.RECENT_CREATE)
+    if (!url) {
+      return Promise.resolve(null)
+    }
     return this.http.post(url, req).toPromise()
   }
-  recentRead() {
+  recentRead(): Observable<any> {
     const url = this.domainConfSvc.getApiUrl('search', 'recentRead', DEFAULT_API_ENDPOINTS.RECENT_READ)
+    if (!url) {
+      return of(null)
+    }
     return this.http.get(url)
   }
 
-  recentDeleteByUser() {
+  recentDeleteByUser(): Observable<any> {
     const url = this.domainConfSvc.getApiUrl('search', 'recentDelete', DEFAULT_API_ENDPOINTS.RECENT_DELETE_BY_USERID)
+    if (!url) {
+      return of(null)
+    }
     return this.http.delete(url)
   }
-  recentDeleteByTime(id: any) {
+  // no dedicated config key for the per-timestamp delete, so it rides on recentDelete
+  recentDeleteByTime(id: any): Observable<any> {
+    if (!this.domainConfSvc.isApiEnabled('search', 'recentDelete')) {
+      return of(null)
+    }
     return this.http.delete(DEFAULT_API_ENDPOINTS.RECENT_DELETE_BY_TIMESTAMP(id))
   }
 

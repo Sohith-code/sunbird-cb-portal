@@ -2,49 +2,206 @@
     max-width: 1200px;
     overflow-x: hidden;
 }
+
 .page-header {
     font-size: 16px;
     font-weight: bold;
 }
+
 @media only screen and (max-width: 768px) {
     .seeAll-home-container {
         // margin-top: 192px;
         flex-direction: column;
-        padding: 0;
+        padding: 0 16px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    // These tabs are populated asynchronously, after Material calculates its
+    // dynamic body height. Let only the affected active tab follow the final
+    // rendered grid height so the footer starts after the complete last row.
+    ::ng-deep .strips-tabgroup.for-you-responsive-tabgroup {
+
+        .mat-tab-body-wrapper,
+        .mat-mdc-tab-body-wrapper {
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+        .mat-tab-body-active,
+        .mat-mdc-tab-body-active,
+        .mat-tab-body-content,
+        .mat-mdc-tab-body-content {
+            height: auto !important;
+            overflow: visible !important;
+        }
     }
 }
-.content-container {
-    > .mr-5.mb-5,
-    > .mr-2.mb-5 {
-        flex-shrink: 1;
-        min-width: 0;
+
+@media only screen and (max-width: 1024px) {
+    .for-you-responsive-card-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, 350px);
+        justify-content: center;
+        align-items: stretch;
+        gap: 20px 16px;
+        width: 100%;
         max-width: 100%;
+        min-width: 0;
         box-sizing: border-box;
-    }
 
-    > .mr-5.mb-5 ::ng-deep .card-portrait {
-        max-width: calc(100% - 20px);
-    }
+        .for-you-card-item {
+            display: flex;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            margin: 0;
+        }
 
-    > .mr-2.mb-5 ::ng-deep .card-portrait {
-        max-width: calc(100% - 8px);
+        ::ng-deep ws-widget-card-content-v2,
+        ::ng-deep .widget-card-content-new {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        ::ng-deep .card-portrait.card-portrait-clickable {
+            width: 350px;
+            max-width: 100%;
+            min-width: 0;
+            margin: 0 !important;
+            box-sizing: border-box;
+
+            .portrait_widget {
+                flex-wrap: wrap;
+                min-width: 0;
+            }
+
+            .course_port,
+            .igot-speilization,
+            .knowledge-level-container {
+                max-width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 599px) {
+    .for-you-responsive-card-grid {
+        grid-template-columns: minmax(0, 350px);
+
+        ::ng-deep .card-portrait.card-portrait-clickable {
+            width: 100%;
+
+            .cbp-card-body {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .cbp-card-media {
+                flex: 0 1 42%;
+                width: 42%;
+                max-width: 147px;
+                min-width: 0;
+
+                .card-image {
+                    width: 100%;
+                    max-width: 100%;
+                    height: auto;
+                    aspect-ratio: 147 / 100;
+                    object-fit: cover;
+                    box-sizing: border-box;
+                }
+            }
+
+            .cbp-card-details {
+                flex: 1 1 0;
+                width: auto !important;
+                min-width: 0;
+            }
+
+            .portrait-subheading,
+            .portrait-org-name {
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+
+            .rating-session {
+                flex-wrap: wrap;
+                min-width: 0;
+            }
+        }
+    }
+}
+
+.continue-learning-responsive-card-grid {
+    justify-content: center !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    .continue-learning-card-item {
+        margin-right: 0;
+        padding-inline: 10px;
+        box-sizing: content-box;
+    }
+}
+
+@media only screen and (max-width: 375px) {
+    .continue-learning-responsive-card-grid {
+        .continue-learning-card-item {
+            flex: 0 0 100%;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            padding-inline: 0;
+            box-sizing: border-box;
+        }
+
+        ::ng-deep sb-uic-cards,
+        ::ng-deep .widget-card-content-new,
+        ::ng-deep sb-uic-card-progress-portrait-lib {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        ::ng-deep .card-progress-portrait-lib {
+            width: 100% !important;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+
+            .width-1-1,
+            .progress-wrapper,
+            .progress-block {
+                min-width: 0;
+            }
+        }
     }
 }
 
 .click-here {
     color: rgb(27, 76, 161);
-  }
+}
 
 .active {
     .pill-name {
         color: white !important;
     }
-    background: #1B4CA1 !important;
-  }
 
-  ::ng-deep .content-pill .mat-chip-selected{
+    background: #1B4CA1 !important;
+}
+
+::ng-deep .content-pill .mat-chip-selected {
     background-color: #1B4CA1 !important;
+
     .pill-name {
-      color: white !important;
-  }
-  }
+        color: white !important;
+    }
+}

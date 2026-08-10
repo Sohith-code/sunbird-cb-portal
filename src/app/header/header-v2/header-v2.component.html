@@ -23,3 +23,12 @@
     [mode]="'top'" [headerFooterConfigData]="headerFooterConfigData"
     [leftNavBarOpen]="leftNavBarOpen()"></ws-app-nav-bar-v2>
 </div>
+<!--
+  NPS rating strip, restored from the retired ws-header (header.component.html:27, which rendered
+  the same element with fromHeader=true). The strip is position:fixed to the bottom of the viewport,
+  so sitting at the end of the header costs nothing.
+  fromHeader MUST stay true: false selects .page-nps, which grid-layout.component.scss:922 sets to
+  display:none !important - the strip would mount and stay invisible.
+-->
+<ws-widget-grid-layout *ngIf="isNpsEnabled" [widgetData]="npsWidgetData" [fromHeader]="true">
+</ws-widget-grid-layout>

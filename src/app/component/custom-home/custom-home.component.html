@@ -7,7 +7,7 @@
   </ng-container>
   <ng-container *ngIf="!showNoConfig">
     <ng-container *ngIf="!homeConfig?.insightOnRight?.active">
-      <div class="bg-info mt-2" [ngClass]="
+      <div class="mt-2" [ngClass]="
           homeConfig?.leftSection?.active &&  homeConfig?.rightSection?.active ? 'left' :
           (homeConfig?.leftSection?.active &&  !homeConfig?.rightSection?.active) ? 'full' : ''"
         *ngIf="homeConfig?.leftSection?.active">
@@ -160,8 +160,8 @@
           </div>
           <div class="sm:block md:hidden">
             <sb-uic-announcements [layoutType]="'mobile'" (openDialog)="triggerOpenDialog($event)"
-             [objectData]="announcementData?.data" [fetchDataFromApi]="false" [channelId]="orgId">
-           </sb-uic-announcements>
+              [objectData]="announcementData?.data" [fetchDataFromApi]="false" [channelId]="orgId">
+            </sb-uic-announcements>
           </div>
           <div class="announcements-container" *ngIf="showModal">
             <div class="cursor-pointer close-share-dialog">
@@ -178,8 +178,7 @@
         </div>
         <!-- events calendar -->
         <div class="mt-8" *ngIf="eventsCalendarData?.enabled">
-            <ws-app-events-calendar
-                [eventCalendarDetails]="eventsCalendarData"></ws-app-events-calendar>
+          <ws-app-events-calendar [eventCalendarDetails]="eventsCalendarData"></ws-app-events-calendar>
         </div>
         <!-- <ws-in-sight-side-bar (telemetryRaisedLibrary)="raiseTelemetryInteratEvent($event)"></ws-in-sight-side-bar> -->
       </div>

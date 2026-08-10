@@ -99,6 +99,8 @@ export class SeeAllWithPillsComponent implements OnInit, OnDestroy {
         })
       }
     }
+    const tabsVisibilityConfig = await this.seeAllSvc.getSeeAllTabsConfig().catch(() => null)
+    this.applyTabVisibilityConfig(tabsVisibilityConfig)
     if (
       this.tabSelected &&
       this.seeAllPageConfig.tabs &&
@@ -106,16 +108,29 @@ export class SeeAllWithPillsComponent implements OnInit, OnDestroy {
     ) {
       this.tabResults = this.seeAllPageConfig.tabs
       this.dynamicTabIndex = _.findIndex(this.tabResults, (v: any) => v.value === this.tabSelected)
+      if (this.dynamicTabIndex < 0) {
+        // the tab asked for in the url was hidden by config — fall back to the first visible one
+        this.dynamicTabIndex = 0
+        this.tabSelected = this.tabResults[0] && this.tabResults[0].value
+        this.userSelectedTab = this.tabSelected
+      }
     }
     if (
       this.tabSelected &&
       this.seeAllPageConfig.tabs &&
       this.seeAllPageConfig.tabs.length
     ) {
-      this.pillResults = this.seeAllPageConfig.tabs[this.dynamicTabIndex].pillsData
-      this.dynamicPillIndex = _.findIndex(this.pillResults, (v: any) => v.value === this.pillSelected)
-      this.resetSelectedPill(this.seeAllPageConfig.tabs[this.dynamicTabIndex].pillsData)
-      this.seeAllPageConfig.tabs[this.dynamicTabIndex].pillsData[this.dynamicPillIndex]['selected'] = true
+      const pillsData = this.seeAllPageConfig.tabs[this.dynamicTabIndex].pillsData || []
+      this.pillResults = pillsData
+      this.dynamicPillIndex = _.findIndex(pillsData, (v: any) => v.value === this.pillSelected)
+      if (this.dynamicPillIndex < 0) {
+        this.dynamicPillIndex = 0
+        this.pillSelected = _.get(pillsData, '[0].value', '')
+      }
+      this.resetSelectedPill(pillsData)
+      if (pillsData[this.dynamicPillIndex]) {
+        pillsData[this.dynamicPillIndex]['selected'] = true
+      }
     }
     this.contentDataList = this.transformSkeletonToWidgets(this.seeAllPageConfig)
 
@@ -127,6 +142,19 @@ export class SeeAllWithPillsComponent implements OnInit, OnDestroy {
       this.fetchUserEnrolledData(this.seeAllPageConfig, tabIndex, pillIndex)
     }
 
+  }
+
+  private applyTabVisibilityConfig(tabsVisibilityConfig: any): void {
+    const tabs = this.seeAllPageConfig && this.seeAllPageConfig.tabs
+    if (!tabs || !tabs.length) {
+      return
+    }
+    const tabsConfig = _.get(tabsVisibilityConfig, this.seeAllPageConfig.key)
+    const visibleTabs = tabs.filter((tab: any) =>
+      tab.hideTab !== true && _.get(tabsConfig, tab.value) !== false)
+    if (visibleTabs.length && visibleTabs.length !== tabs.length) {
+      this.seeAllPageConfig.tabs = visibleTabs
+    }
   }
 
   checkForDateFilters(filters: any) {
@@ -783,6 +811,32 @@ export class SeeAllWithPillsComponent implements OnInit, OnDestroy {
     return 0
   }
 
+  get isForYouResponsiveLayout(): boolean {
+    const activeTabValue = this.userSelectedTab ||
+      (this.dynamicTabIndex >= 0 && this.tabResults[this.dynamicTabIndex]
+        ? this.tabResults[this.dynamicTabIndex].value
+        : '')
+    return this.isForYouResponsiveTab(activeTabValue)
+  }
+
+  isForYouResponsiveTab(tabValue: string): boolean {
+    return Boolean(this.seeAllPageConfig &&
+      this.seeAllPageConfig.key === 'forYou' &&
+      (tabValue === 'igotSpecializations' || tabValue === 'recentlyAdded'))
+  }
+
+  isContinueLearningResponsivePill(tab: any): boolean {
+    const selectedPillIndex = this.getSelectedPillIndex(tab)
+    const selectedPill = selectedPillIndex >= 0 && tab && tab.pillsData
+      ? tab.pillsData[selectedPillIndex]
+      : null
+    const responsivePills = ['inprogress', 'unenrolled', 'completed']
+    return Boolean(this.seeAllPageConfig &&
+      this.seeAllPageConfig.key === 'continueLearning' &&
+      tab && tab.value === 'Contents' &&
+      selectedPill && responsivePills.includes(selectedPill.value))
+  }
+
   // MY learning Strip methods starts here
   fetchUserEnrolledData(strip: NsContentStripWithTabsAndPills.IContentStripUnit,
     tabIndex: number, pillIndex: any, calculateParentStatus = true) {
@@ -940,7 +994,7 @@ export class SeeAllWithPillsComponent implements OnInit, OnDestroy {
         contentTemp.content.primaryCategory = c?.content && c?.content?.primaryCategory || c?.event && c?.event?.resourceType || ''
         contentTemp.cType = c.event ? 'event' : ''
         contentTemp.completedOn = c.completedOn || ''
-        contentTemp.active = c.active || ''
+        contentTemp.active = c.active || false
         if (c.surveyCompletionStatus !== undefined) {
           contentTemp.surveyCompletionStatus = c.surveyCompletionStatus
         }

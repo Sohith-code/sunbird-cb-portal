@@ -16,8 +16,8 @@
   <div class="bk-see-all__search-row">
     <div class="bk-see-all__search-wrap">
       <mat-icon class="bk-see-all__search-icon">search</mat-icon>
-      <input class="bk-see-all__search-input" type="text" placeholder="Search Anything in Bharat Kalp..."
-        [(ngModel)]="searchText" (ngModelChange)="onSearch()" />
+      <input class="bk-see-all__search-input" type="text" placeholder="Search Anything in Bharat Kalp..." [(ngModel)]="searchText"
+        (ngModelChange)="onSearch()" />
     </div>
     <div class="bk-see-all__week-wrap">
       <!-- Custom dropdown for aligned lock icons -->
@@ -27,12 +27,11 @@
           <mat-icon class="bk-week-dd__arrow">keyboard_arrow_down</mat-icon>
         </button>
         <div class="bk-week-dd__panel" *ngIf="weekDropdownOpen">
-          <div class="bk-week-dd__option" (click)="selectWeekOption(ALL_WEEKS)"
-            [class.bk-week-dd__option--active]="selectedWeek === ALL_WEEKS">
+          <div class="bk-week-dd__option" (click)="selectWeekOption(ALL_WEEKS)" [class.bk-week-dd__option--active]="selectedWeek === ALL_WEEKS">
             <span>All Weeks</span>
           </div>
-          <div *ngFor="let w of weeks" class="bk-week-dd__option"
-            [class.bk-week-dd__option--active]="selectedWeek === w" (click)="selectWeekOption(w)">
+          <div *ngFor="let w of weeks" class="bk-week-dd__option" [class.bk-week-dd__option--active]="selectedWeek === w"
+            (click)="selectWeekOption(w)">
             <span>{{ weekLabel(w) }}</span>
           </div>
         </div>
@@ -41,15 +40,15 @@
   </div>
 
   <!-- Content type line tabs -->
-  <mat-tab-group class="bk-see-all__tabs" animationDuration="0ms" [selectedIndex]="activeTabIndex"
-    [mat-stretch-tabs]="false" (selectedIndexChange)="onTabChange($event)">
+  <mat-tab-group class="bk-see-all__tabs" animationDuration="0ms" [selectedIndex]="activeTabIndex" [mat-stretch-tabs]="false"
+    (selectedIndexChange)="onTabChange($event)">
     <mat-tab *ngFor="let tab of contentTypeTabs; trackBy: trackTabKey" [label]="tab.label"></mat-tab>
   </mat-tab-group>
 
   <!-- Status filter pills — inside tabs area (resources aren't enrollable/trackable, so no status filter) -->
   <div class="bk-see-all__status-pills" *ngIf="!isActiveTabResources">
-    <button *ngFor="let s of statusPills" class="bk-see-all__status-pill"
-      [class.bk-see-all__status-pill--active]="selectedStatus === s" (click)="onStatusSelect(s)">
+    <button *ngFor="let s of statusPills" class="bk-see-all__status-pill" [class.bk-see-all__status-pill--active]="selectedStatus === s"
+      (click)="onStatusSelect(s)">
       {{ s }}
     </button>
   </div>
@@ -61,10 +60,19 @@
   </div>
 
   <!-- Cards grid -->
-  <div class="bk-see-all__grid" *ngIf="!loading && pagedCards.length">
-    <sb-uic-card-portrait *ngFor="let card of pagedCards" [widgetData]="card" (contentData)="onCardNavigate($event)">
-    </sb-uic-card-portrait>
-  </div>
+  <ng-container *ngIf="!loading && pagedCards.length && activetabKey === 'extCourses'">
+    <div class="bk-see-all__grid">
+      <sb-uic-card-portrait-ext *ngFor="let card of pagedCards" [widgetData]="card" (contentData)="onCardContentDataExt($event)">
+      </sb-uic-card-portrait-ext>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!loading && pagedCards.length && activetabKey !== 'extCourses'">
+    <div class="bk-see-all__grid" *ngIf="!loading && pagedCards.length">
+      <sb-uic-card-portrait *ngFor="let card of pagedCards" [widgetData]="card" (contentData)="onCardNavigate($event)">
+      </sb-uic-card-portrait>
+    </div>
+  </ng-container>
+
 
   <!-- Empty state -->
   <div class="bk-see-all__empty" *ngIf="!loading && !pagedCards.length">
@@ -84,17 +92,15 @@
       </div>
     </div>
     <div class="bk-see-all__pages">
-      <button class="bk-see-all__page-btn bk-see-all__page-btn--nav" [disabled]="currentPage === 0"
-        (click)="goToPage(currentPage - 1)">
+      <button class="bk-see-all__page-btn bk-see-all__page-btn--nav" [disabled]="currentPage === 0" (click)="goToPage(currentPage - 1)">
         <mat-icon>chevron_left</mat-icon>
       </button>
       <ng-container *ngFor="let p of pageNumbers">
         <span *ngIf="p === '...'" class="bk-see-all__page-ellipsis">...</span>
-        <button *ngIf="p !== '...'" class="bk-see-all__page-btn"
-          [class.bk-see-all__page-btn--active]="currentPage === p" (click)="goToPage(p)">{{ +p + 1 }}</button>
+        <button *ngIf="p !== '...'" class="bk-see-all__page-btn" [class.bk-see-all__page-btn--active]="currentPage === p" (click)="goToPage(p)">{{ +p
+          + 1 }}</button>
       </ng-container>
-      <button class="bk-see-all__page-btn bk-see-all__page-btn--nav" [disabled]="currentPage === totalPages - 1"
-        (click)="goToPage(currentPage + 1)">
+      <button class="bk-see-all__page-btn bk-see-all__page-btn--nav" [disabled]="currentPage === totalPages - 1" (click)="goToPage(currentPage + 1)">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>

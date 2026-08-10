@@ -142,7 +142,8 @@ export class ExploreMenuComponent implements OnInit {
     if (!navUrl) {
       const action = this.CODE_ROUTES[item?.code]
       if (action) {
-        this.router.navigate([action.path], { queryParams: action.queryParams, queryParamsHandling: 'merge' })
+        const path = item?.code === 'explore' ? this.getGlobalSearchRoute() : action.path
+        this.router.navigate([path], { queryParams: action.queryParams, queryParamsHandling: 'merge' })
       }
       return
     }
@@ -151,6 +152,15 @@ export class ExploreMenuComponent implements OnInit {
       return
     }
     this.router.navigate([navUrl], item?.queryParams ? { queryParams: item.queryParams } : {})
+  }
+
+  private getGlobalSearchRoute(): string {
+    const profileRoles = this.configSvc.userProfileV2?.userRoles || []
+    const isVolunteer = (!!this.configSvc.userRoles && this.configSvc.userRoles.has('volunteer'))
+      || (Array.isArray(profileRoles) && profileRoles.some(
+        (role: any) => (typeof role === 'string' ? role : role?.role || '').toUpperCase() === 'VOLUNTEER'
+      ))
+    return isVolunteer ? '/app/globalsearch/volunteer' : '/app/globalsearch'
   }
 
   // the info-cards section navigates on its own (routerLink / href), so this only

@@ -1,19 +1,20 @@
 .container-balanced {
     max-width: 1202px;
-    margin-left: auto!important;
-    margin-right: auto!important;
+    margin-left: auto !important;
+    margin-right: auto !important;
     height: auto;
     min-height: 400px;
 
     @media (max-width:1024px) {
-        margin-left: 8px!important;
-        margin-right: 8px!important;
+        margin-left: 8px !important;
+        margin-right: 8px !important;
     }
 
 }
 
 .top_card_container {
     margin-top: 30px;
+
     .top_card_inner_box {
         align-items: center;
         // enable for flex box layout
@@ -45,28 +46,23 @@
 
     .top_search_box {
         width: 100%;
-        overflow: hidden;
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
         justify-content: space-between;
-
+        gap: 8px;
 
         .search_box_inner {
             max-width: 585px;
-            float: left;
-
-            @media (max-width:768px) {
-                width: 75%;
-                max-width: 75%;
-            }
+            flex: 1 1 auto;
+            min-width: 0;
 
             .search_box_main {
                 width: 100%;
-                max-width: 585px;
+                max-width: 100%;
+                min-width: 0;
 
-                @media (max-width:768px) {
-                    max-width: 100%;
-                }
-
-                mat-form-field .mat-form-field-wrapper .mat-form-field-flex .mat-form-field-infix{
+                mat-form-field .mat-form-field-wrapper .mat-form-field-flex .mat-form-field-infix {
                     border-top-width: 8px !important;
                     padding: 12px 10px 12px 12px;
 
@@ -83,21 +79,26 @@
         }
 
         .item_dropdown_box {
-            float: right;
-            // width: 210px;
+            flex: 0 0 auto;
             box-sizing: border-box;
 
             @media (max-width:768px) {
-                width: 20%;
                 display: flex;
                 align-items: center;
                 margin-right: 8px;
             }
+
             .item {
                 background: white;
-                width: 100%;
+                width: auto;
+                white-space: nowrap;
                 padding: 0px 16px;
                 border-radius: 52px;
+
+                @media (max-width:400px) {
+                    padding: 0px 10px;
+                }
+
                 .mat-form-field {
                     // background-color: #f0f3f4;
                     // border:1px solid rgba(0, 0, 0, 0.08);
@@ -109,8 +110,9 @@
                         width: 100%;
                     }
                 }
+
                 .theme-igot.day-mode .mat-form-field-appearance-legacy .mat-form-field-underline {
-                    background-color:none;
+                    background-color: none;
                 }
 
             }
@@ -118,7 +120,7 @@
     }
 
     .provider_card_box {
-        width:100%;
+        width: 100%;
         align-items: center;
         // Enable if flex layout is needed
         // flex-direction: row;
@@ -140,8 +142,8 @@
     }
 
     a.load_more_link {
-        margin:35px auto 0 auto;
-        text-align:center;
+        margin: 35px auto 0 auto;
+        text-align: center;
         display: block;
     }
 
@@ -149,29 +151,38 @@
 
 
 .sort-menu {
-width: 100% !important;
+    width: 100% !important;
 }
+
 .search-wrapper {
+    display: block;
+    width: 100%;
+
     mat-icon {
         top: 8px;
         left: 20px;
     }
+
     .search-field {
-        width:  487px;
+        width: 100%;
+        max-width: 487px;
+        min-width: 0;
+        box-sizing: border-box;
         height: 40px;
         padding: 12px 16px 12px 48px;
         gap: 8px;
         border-radius: 52px;
         background: #FFFFFF;
         border: 1px solid #00000014;
-        @media (max-width:768px) {
-            width:  284px;
+
+        @media (max-width:400px) {
+            padding: 12px 12px 12px 40px;
         }
     }
 }
 
 
 input[type="search"]::-webkit-search-decoration:hover,
-input[type="search"]::-webkit-search-cancel-button:hover { 
-    cursor:pointer; 
+input[type="search"]::-webkit-search-cancel-button:hover {
+    cursor: pointer;
 }

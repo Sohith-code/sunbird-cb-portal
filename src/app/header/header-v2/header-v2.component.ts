@@ -34,6 +34,17 @@ export class HeaderV2Component implements OnInit {
   mobileTopHeaderVisibilityStatus = signal<boolean>(true)
   widgetData: any = {}
 
+  // ws-widget-grid-layout is rendered only to host the NPS rating strip, so it gets an empty widget
+  // list. The old ws-header passed its own widgetData here and so also drew the cardHomeHubs
+  // secondary bar; the v2 sidebar replaced that bar, and reusing widgetData would bring it back
+  npsWidgetData: any = { widgets: [] }
+
+  // global-config -> components.dialogs.npsSurvey (and the dialogs master switch)
+  get isNpsEnabled(): boolean {
+    return this.domainConfSvc.isConfigEnabled('components.dialogs', 'enabled')
+      && this.domainConfSvc.isConfigEnabled('components.dialogs', 'npsSurvey')
+  }
+
   constructor(
     private valueSvc: ValueService,
     private mobileAppsService: MobileAppsService,

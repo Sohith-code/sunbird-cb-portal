@@ -99,11 +99,16 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
   // iGOTAIConfigLoaded = false
   // dataSubject = new BehaviorSubject<boolean>(false)
   menuBarDetails: any = {}
+  private achievementsSection: any = null
   leftNavBarIsOpen = signal(true)
   showKarmaLeaderboard = signal(false)
   hideFooterSection = signal(false)
   isHomePage = signal(false)
   showFullScreen = signal(false)
+  // Routes that need full width (100%) on mobile instead of the default 90% .container-balanced gets.
+  // Add more prefixes here when another route needs the same treatment.
+  fullWidthMobileRoutes = ['/app/learn/bharat-kalp']
+  isFullWidthMobileRoute = signal(false)
   navBarOpenStatusBasedOnNav = signal(true)
   openStatusUserSelection = signal(true)
   // The sidebar only pushes page content on the home page. Everywhere else it is an overlay
@@ -498,6 +503,10 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
           this.showFullScreen.set(false)
         }
 
+        this.isFullWidthMobileRoute.set(
+          this.fullWidthMobileRoutes.some(route => this.currentUrl.startsWith(route))
+        )
+
         if (
           !!this.currentUrl.startsWith('/public/logout')
           || !!this.currentUrl.startsWith('/public/signup')
@@ -609,36 +618,33 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
           }
           achievements.items = itemsList
         }
-        const currentUserId = this.configSvc?.unMappedUser?.id
-        const rankItem = achievements?.items?.find((item: any) => item.code === 'rank' && item.enabled !== false)
-        if (currentUserId && rankItem) {
-          this.homePageSvc.getLearnerLeaderboardCached().subscribe((res: any) => {
-            const results = res?.result?.result
-            if (Array.isArray(results) && results.length) {
-              const currentUserRank = results.find((entry: any) => entry.userId === currentUserId)
-              const rank = currentUserRank?.rank
-
-              if (rank != null) {
-                rankItem.value = `${this.toOrdinal(rank)} Rank`
-              } else {
-                rankItem.value = '0 Rank'
-              }
-            } else {
-              rankItem.value = '0 Rank'
-            }
-            achievements.sectionLoading = false
-            this.sendDetailsChangedEvent(achievements)
-          }, (_error: any) => {
-            achievements.sectionLoading = false
-            this.sendDetailsChangedEvent(achievements)
-          }
-          )
-        } else {
-          achievements.sectionLoading = false
-          this.sendDetailsChangedEvent(achievements)
-        }
+        this.achievementsSection = achievements
+        achievements.sectionLoading = false
+        this.sendDetailsChangedEvent(achievements)
       } catch (_e) { /* ignore */ }
     }
+  }
+
+  private updateAchievementRank() {
+    const currentUserId = this.configSvc?.unMappedUser?.id
+    const achievements = this.achievementsSection
+    const rankItem = achievements?.items?.find((item: any) => item.code === 'rank' && item.enabled !== false)
+    if (!currentUserId || !rankItem) {
+      return
+    }
+    this.homePageSvc.getLearnerLeaderboardCached().subscribe((res: any) => {
+      const results = res?.result?.result
+      if (Array.isArray(results) && results.length) {
+        const currentUserRank = results.find((entry: any) => entry.userId === currentUserId)
+        const rank = currentUserRank?.rank
+        rankItem.value = rank != null ? `${this.toOrdinal(rank)} Rank` : '0 Rank'
+      } else {
+        rankItem.value = '0 Rank'
+      }
+      this.sendDetailsChangedEvent(achievements)
+    }, (_error: any) => {
+      this.sendDetailsChangedEvent(achievements)
+    })
   }
 
   setOtherPortals() {
@@ -889,6 +895,10 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
   onNavItemClicked(event: any) {
     this.raiseTelemetryExploreContent(event.code, event.subType)
     switch (event.code) {
+      case 'start-tour':
+        this.router.navigateByUrl('/page/home')
+        this.configSvc.updateTourGuideMethod(false)
+        break
       case 'explore':
         this.exploreContent()
         this.menuBarDetails.activeItemCode = event.code
@@ -905,27 +915,8 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   viewAllAchievements() {
-    this.homePageSvc.getLearnerLeaderboardCached().subscribe(
-      (res: any) => {
-        const results = _.get(res, 'result.result', [])
-        if (Array.isArray(results) && results.length >= 3) {
-          this.showKarmaLeaderboard.set(true)
-        } else {
-          this.navigateToKarmaPoints()
-        }
-      },
-      () => {
-        this.navigateToKarmaPoints()
-      },
-    )
-  }
-
-  private navigateToKarmaPoints() {
-    this.showKarmaLeaderboard.set(false)
-    this.openStatusUserSelection.set(false)
-    this.leftNavBarIsOpen.set(false)
-    this.navBarOpenStatusBasedOnNav.set(false)
-    this.router.navigate(['/app/person-profile/karma-points'])
+    this.showKarmaLeaderboard.set(true)
+    this.updateAchievementRank()
   }
 
   viewMyActivities() {
@@ -1007,7 +998,15 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
       queryParams,
       queryParamsHandling: 'merge' as 'merge',
     }
-    this.router.navigate(['/app/globalsearch'], navigationExtras)
+    this.router.navigate([this.getGlobalSearchRoute()], navigationExtras)
+  }
+  private getGlobalSearchRoute(): string {
+    const profileRoles = this.configSvc.userProfileV2?.userRoles || []
+    const isVolunteer = (!!this.configSvc.userRoles && this.configSvc.userRoles.has('volunteer'))
+      || (Array.isArray(profileRoles) && profileRoles.some(
+        (role: any) => (typeof role === 'string' ? role : role?.role || '').toUpperCase() === 'VOLUNTEER'
+      ))
+    return isVolunteer ? '/app/globalsearch/volunteer' : '/app/globalsearch'
   }
 
   raiseTelemetryExploreContent(id: string, subType: string = '') {
@@ -1033,7 +1032,8 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
   openAppDownloadDialog() {
     const dialogRef = this.dialog.open(DialogBoxComponent, {
       width: '1000px',
-      panelClass: 'download-app-popup-new'
+      panelClass: 'download-app-popup-new',
+      maxHeight: '95vh',
     })
     dialogRef.afterClosed().subscribe(() => { })
   }

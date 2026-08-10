@@ -474,6 +474,15 @@ $secondary-color: #EF951E;
     border-top-right-radius: 8px;
   }
 
+  // The standard card is wider than the shared 250px image cap.
+  // Keep this override scoped to its image variants so other cards are unaffected.
+  .standard-card-image {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
   .mat-subheading-1 {
     /* stylelint-disable */
     font: 600 14px/24px Montserrat;
@@ -524,8 +533,10 @@ $secondary-color: #EF951E;
     // height: $title-line-count * $title-line-height;
     // line-height: $title-line-height;
 
-    word-break: break-all;
-    white-space: initial;
+    word-break: normal;
+    overflow-wrap: break-word;
+    hyphens: none;
+    white-space: normal;
     margin: 8px 0;
     position: relative;
     overflow: hidden;
@@ -548,6 +559,10 @@ $secondary-color: #EF951E;
     text-overflow: ellipsis;
     // line-height: $description-line-height;
   }
+}
+
+.card-standard-container.standard-course-card {
+  width: 245px;
 }
 
 .card-standard-container:hover {
@@ -1556,6 +1571,94 @@ $title-line-count: 2;
 
   .cbpwidth {
     width: calc(100vw - 100px);
+  }
+}
+
+@media only screen and (max-width:1024px) {
+  :host-context(#cbpPlan-scroller) {
+    flex: 0 0 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  :host-context(#cbpPlan-scroller) .card-portrait.card-portrait-clickable.cbpwidth,
+  :host-context(.for-you-responsive-card-grid) .card-portrait.card-portrait-clickable.cbpwidth {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-right: 0 !important;
+    box-sizing: border-box;
+
+    &:hover {
+      transform: none;
+    }
+
+    .portrait_widget {
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .course_port,
+    .igot-speilization,
+    .knowledge-level-container {
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .igot-speilization span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .cbp-card-body {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .cbp-card-media {
+      flex: 0 1 42%;
+      width: 42%;
+      max-width: 147px;
+      min-width: 0;
+
+      .card-image {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 147 / 100;
+        object-fit: cover;
+        box-sizing: border-box;
+      }
+    }
+
+    .cbp-card-details {
+      flex: 1 1 0;
+      width: auto !important;
+      min-width: 0;
+    }
+
+    .portrait-subheading,
+    .portrait-org-name {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .rating-session {
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .duration-box {
+      max-width: calc(100% - 16px);
+      box-sizing: border-box;
+
+      .duration {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
   }
 }
 
