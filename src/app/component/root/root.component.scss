@@ -437,3 +437,47 @@ ws-app-nav-bar {
     transform: translateY(0) scale(1);
   }
 }
+
+.banner-independence-day {
+  height: 40px;
+  width: 100%;
+  background-color: var(--surface-primary);
+  position: fixed;
+  top: 0;
+  z-index: 10001;
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 600;
+    font-size: 28px;
+    text-transform: uppercase;
+    color: #000;
+    @media(max-width:768px) {
+      font-size: 20px;
+    }
+    text-shadow:
+      3px 0 #fff,
+      -3px 0 #fff,
+      0 3px #fff,
+      0 -3px #fff,
+      2px 2px #fff,
+      -2px -2px #fff,
+      2px -2px #fff,
+      -2px 2px #fff;
+  }
+
+}
+
+::ng-deep .banner-active sb-uic-dynamic-sidebar aside.sidebar {
+  top: 40px;
+  height: calc(100vh - 40px);
+}

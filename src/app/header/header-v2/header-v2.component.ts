@@ -29,6 +29,8 @@ export class HeaderV2Component implements OnInit {
   leftNavBarOpen = input<boolean>(false);
   @Input() headerFooterConfigData: any
   @Input() showHubs = false
+  @Input() config: any
+  @Input() isHomePage = false
 
   isXSmall$ = this.valueSvc.isXSmall$
   mobileTopHeaderVisibilityStatus = signal<boolean>(true)
@@ -38,7 +40,7 @@ export class HeaderV2Component implements OnInit {
   // list. The old ws-header passed its own widgetData here and so also drew the cardHomeHubs
   // secondary bar; the v2 sidebar replaced that bar, and reusing widgetData would bring it back
   npsWidgetData: any = { widgets: [] }
-
+  independenceDayBanner: any
   // global-config -> components.dialogs.npsSurvey (and the dialogs master switch)
   get isNpsEnabled(): boolean {
     return this.domainConfSvc.isConfigEnabled('components.dialogs', 'enabled')
@@ -52,6 +54,7 @@ export class HeaderV2Component implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.independenceDayBanner = this.config?.overrideThemeChanges?.independenceDayBanner || {}
     this.widgetData = {
       widgets: [
         [

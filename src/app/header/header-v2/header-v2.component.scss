@@ -237,3 +237,44 @@
     list-style: none;
   }
 }
+
+.banner-independence-day {
+  height: 48px;
+  width: 100%;
+  background-color: var(--surface-primary);
+  position: fixed;
+  top: 0;
+  z-index: 10001;
+  margin: 0px 0 -16px -16px;
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  span {
+    position: absolute;
+    top: 62%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 600;
+    font-size: 28px;
+    text-transform: uppercase;
+    color: #000;
+    @media(max-width:576px) {
+      font-size: 15px;
+    }
+
+    text-shadow:
+      3px 0 #fff,
+      -3px 0 #fff,
+      0 3px #fff,
+      0 -3px #fff,
+      2px 2px #fff,
+      -2px -2px #fff,
+      2px -2px #fff,
+      -2px 2px #fff;
+  }
+
+}

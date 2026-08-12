@@ -120,6 +120,9 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
   // drawer (see isOverlayMode in sb-uic-dynamic-sidebar), so opening it must leave the header
   // and main content exactly where they are instead of reflowing them.
   sidebarPushesContent = computed(() => this.isHomePage() && this.leftNavBarIsOpen())
+
+  independenceDayBanner: any
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -394,6 +397,7 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
     // tslint: disable
   }
   ngOnInit() {
+    this.independenceDayBanner = this.configSvc?.overrideThemeChanges?.independenceDayBanner || {}
     // let showTour = localStorage.getItem('tourGuide')? JSON.parse(localStorage.getItem('tourGuide')||''): {}
     // this.showTour = showTour && showTour.disable ? showTour.disable : false
     this.mobileAppsSvc.mobileTopHeaderVisibilityStatus.subscribe((status: any) => {

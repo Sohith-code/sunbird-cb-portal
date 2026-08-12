@@ -34,7 +34,14 @@
   </div>
 </div>
 <ng-container *ngIf="!configSvc.globalConfigLoadFailed">
-  <div class="flex gap-0 root-container" [style.background-color]="isHomePage() ? 'var(--surface-primary)' : '#F3F5F9'">
+  @if(independenceDayBanner?.isEnabled && isHomePage() && (isXSmall$ | async) === false) {
+    <div class="banner-independence-day">
+      <img [src]="independenceDayBanner?.desktop?.imageUrl" [alt]="independenceDayBanner?.desktop?.onTopText">
+      <span>{{independenceDayBanner?.desktop?.onTopText}}</span>
+    </div>
+  }
+  <div class="flex gap-0 root-container" [style.background-color]="isHomePage() ? 'var(--surface-primary)' : '#F3F5F9'" [ngClass]="independenceDayBanner?.isEnabled && isHomePage() ? 'banner-active' : ''"
+    [style.margin-top]="independenceDayBanner?.isEnabled && isHomePage() && (isXSmall$ | async) === false ? '40px' : '0px'">
     @if ((isXSmall$ | async) === false && showMenuBardetails && (isTabView$ | async) === false) {
     <div class="w-fit">
       <sb-uic-dynamic-sidebar [menuBarDetails]="menuBarDetails" [detailsChanged]="detailsChanged()"
@@ -75,7 +82,7 @@
           [ngClass]="(isDesktopView$ | async) && showMenuBardetails ? (sidebarPushesContent() ? 'navBarOpenContent' : 'navBarCloseContent') : ''"
           class="block header-postion w-full" [class.tab-header-width]="isTabView$ | async"
           [leftNavBarOpen]="sidebarPushesContent()" [headerFooterConfigData]="headerFooterConfigData"
-          [showHubs]="showHubs">
+          [showHubs]="showHubs" [config]="configSvc" [isHomePage]="isHomePage()">
         </ws-header-v2>
         }
       </div>
