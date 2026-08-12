@@ -66,14 +66,40 @@ export class SeeAllHomeComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    let pageSubType = ''
-    let pageType = ''
-    this.activated.queryParams.subscribe((res: any) => {
-      this.keyData = (res.key) ? res.key : ''
-      this.tabSelected = (res.tabSelected) ? res.tabSelected : ''
-      pageSubType = (res.pageSubType) ? res.pageSubType : ''
-      pageType = (res.pageType) ? res.pageType : ''
-    })
+    // Every /app/seeAll?key=... link resolves to this same route, so the router reuses
+    // the component and only the query string changes - it is never re-created. The
+    // work below therefore has to re-run per emission: previously the subscription just
+    // stored the params while the config lookup and fetch ran once in ngOnInit, so
+    // switching strips (trendingOnIgot -> karmaTracks) updated the URL but left the
+    // previous strip's content on screen. The first emission is synchronous, which is
+    // why the initial load always looked correct.
+    this.activated.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+        this.keyData = (res.key) ? res.key : ''
+        this.tabSelected = (res.tabSelected) ? res.tabSelected : ''
+        this.loadPage((res.pageType) ? res.pageType : '', (res.pageSubType) ? res.pageSubType : '')
+      })
+
+    // Setup search control with debounce
+    this.setupSearchControl()
+  }
+
+  private async loadPage(pageType: string, pageSubType: string) {
+    // Reset anything derived from the previous key. seeAllPageConfig especially: the
+    // lookups below are guarded by `if (!this.seeAllPageConfig)`, so a leftover config
+    // would short-circuit every fallback and the old strip would win.
+    this.seeAllPageConfig = undefined
+    this.contentDataList = []
+    this.tabResults = []
+    this.dynamicTabIndex = 0
+    this.savedTabIndex = 0
+    this.isCoisContent = false
+    this.page = 1
+    this.offsetForPage = 0
+    this.totalCount = 0
+    this.totalPages = 0
+
     const configData = await this.seeAllSvc.getSeeAllFormsConfigJson(pageType, pageSubType).catch(_error => { })
     if (configData && configData.homeStrips) {
       configData.homeStrips.forEach((ele: any) => {
@@ -112,6 +138,11 @@ export class SeeAllHomeComponent implements OnInit, OnDestroy {
         })
       }
     }
+    // No strip matches this key - nothing to render. Bail out rather than dereference
+    // an undefined config below, which is what the original code did on a miss.
+    if (!this.seeAllPageConfig) {
+      return
+    }
     if (
       this.tabSelected &&
       this.seeAllPageConfig.tabs &&
@@ -133,9 +164,6 @@ export class SeeAllHomeComponent implements OnInit, OnDestroy {
       this.isCoisContent = true
       this.fetchCiosContentData(this.seeAllPageConfig)
     }
-
-    // Setup search control with debounce
-    this.setupSearchControl()
   }
 
   checkForDateFilters(filters: any) {

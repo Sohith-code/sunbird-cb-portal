@@ -52,8 +52,20 @@ import 'zone.js' // Included with Angular CLI.
  */
 import 'hammerjs'
 import '@angular/localize/init'
-// these changes are for SVG Preview
-(window as any).global = window
-global.Buffer = global.Buffer || require('buffer').Buffer
-global.process = require('process')
+// Node globals some dependencies expect to find on `window` (needed for SVG Preview).
+//
+// These are static imports, not require(). The esbuild-based `application` builder emits
+// ESM and rewrites any require() call it cannot resolve statically into a shim that
+// throws at runtime:
+//   Uncaught Error: Dynamic require of "buffer" is not supported
+// which killed the rest of this file - so neither Buffer nor process was ever installed.
+// Keep these below the zone.js import: ES imports are hoisted but still evaluate in
+// source order, and zone.js has to patch the environment first.
+import { Buffer as BufferShim } from 'buffer'
+import processShim from 'process'
+
+const globalRef = window as { [key: string]: any }
+globalRef['global'] = window
+globalRef['Buffer'] = globalRef['Buffer'] || BufferShim
+globalRef['process'] = globalRef['process'] || processShim
 // END : changes

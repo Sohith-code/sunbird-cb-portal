@@ -103,7 +103,25 @@ function proxyCreator(route, baseUrl) {
   return route
 }
 
+// Content-hashed build output (main-3AE6P54I.js, chunk-543WEO7T.js, libraries-SAUM5B55.css, ...).
+// A new deploy produces new filenames, so these can be cached forever.
+const IMMUTABLE_ASSET = /^\/(?:media\/)?[^/]+-[A-Z0-9]{8,}\.(?:js|mjs|css|woff2?|ttf|eot|svg|png|jpe?g|gif|webp)$/
+// Entry points that must never be pinned: a stale copy points at chunks that no longer exist.
+const ALWAYS_REVALIDATE = /^\/(?:index\.html|ngsw\.json|ngsw-worker\.js|safety-worker\.js|worker-basic\.min\.js)$/
+// Requests for a build artifact. If it is not on disk it is genuinely gone.
+const STATIC_ASSET = /\.(?:js|mjs|css|map|json|woff2?|ttf|eot|svg|png|jpe?g|gif|webp|ico|txt)$/
+
+function cacheControl(req, res, next) {
+  if (ALWAYS_REVALIDATE.test(req.path)) {
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate')
+  } else if (IMMUTABLE_ASSET.test(req.path)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+  }
+  next()
+}
+
 function uiHostCreator(hostPath, hostFolderName) {
+  app.use(`${hostPath}`, cacheControl)
   app.use(
     `${hostPath}`,
     expressStaticGzip(path.join(__dirname, `www/${hostFolderName}`), {
@@ -117,6 +135,20 @@ res.sendFile(path.join(__dirname, `www/${hostFolderName}/${req.url}`))
 
 } else if (req.url.startsWith('/.well-known/')) {
 res.sendFile(path.join(__dirname, `${req.url}`))
+
+} else if (STATIC_ASSET.test(req.path)) {
+// Falling through to index.html here hands the browser HTML with a 200 and a
+// text/html content type for what it requested as a module, which surfaces as
+// ChunkLoadError / "Failed to fetch dynamically imported module" instead of a
+// cache miss. Answer honestly so the client can recover.
+//
+// Drop the Cache-Control that cacheControl() set on the way in. It runs before the
+// static handler knows whether the file exists, so a request for a deleted chunk
+// (chunk-TEZ73SP4.js still matches IMMUTABLE_ASSET) would otherwise return a 404
+// carrying `max-age=31536000, immutable` - pinning "this asset does not exist" in
+// the browser and every intermediary cache for a year.
+res.removeHeader('Cache-Control')
+res.status(404).type('txt').send('Not found')
 
 } else {
 res.sendFile(path.join(__dirname, `www/${hostFolderName}/index.html`))

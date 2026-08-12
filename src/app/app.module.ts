@@ -70,12 +70,11 @@ import { CommonDataService } from './services/common-data.service'
 import { WIDGET_REGISTRATION_CONFIG } from '@sunbird-cb/collection'
 import { MandatoryNotificationModalComponent } from './component/mandatory-notification-modal/mandatory-notification-modal.component'
 import { HeaderV2Component } from './header/header-v2/header-v2.component'
-import { AppTourComponent } from './component/app-tour/app-tour.component'
-import { GuidedTourModule, GuidedTourService } from 'igot-cb-tour-guide'
-import { AppTourVideoComponent } from './component/app-tour-video/app-tour-video.component'
 import { NoConnectionV2Component } from './component/no-connection-v2/no-connection-v2.component'
 import { KarmaLeaderboardV2Module } from './home/home-v2/karma-leaderboard-v2/karma-leaderboard-v2.module'
 import { AppNavBarV2Component } from './component/app-nav-bar-v2/app-nav-bar-v2.component'
+import { GuidedTourModule, GuidedTourService } from 'igot-cb-tour-guide'
+import { AppTourSharedModule } from './component/app-tour/app-tour-shared.module'
 // @Injectable()
 // export class HammerConfig extends GestureConfig {
 //   buildHammer(element: HTMLElement) {
@@ -116,8 +115,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppLogoComponent,
     ProfileVerificationDialogComponent,
     MandatoryNotificationModalComponent,
-    AppTourVideoComponent,
-    AppTourComponent,
   ],
   imports: [
     FormsModule,
@@ -151,7 +148,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NoConnectionV2Component,
     KarmaLeaderboardV2Module,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
-    // HeaderModule,
+    HeaderModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -160,7 +157,8 @@ export function HttpLoaderFactory(http: HttpClient) {
       },
     }),
     GuidedTourModule,
-    AppNavBarV2Component
+    AppNavBarV2Component,
+    AppTourSharedModule,
 
   ],
   exports: [

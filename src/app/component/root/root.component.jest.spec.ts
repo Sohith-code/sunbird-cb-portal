@@ -70,7 +70,7 @@ describe('RootComponent (No TestBed)', () => {
         profileDetails: {
           profileStatus: 'active',
           employmentDetails: { departmentName: 'IT' },
-          get_started_tour: { skipped: false, visited: false },
+          get_started_tour_v2: { skipped: false, visited: false },
         },
       },
       userProfile: { userId: 'user-123' },

@@ -24,6 +24,30 @@ export class NetCoreService {
     
       }
 
+    // Mirrors bootstrapNetcore() in src/app/services/netcore.service.ts. The
+    // guard is a global marker because that file and this one are separate
+    // classes with separate instances, and init() is reachable from the
+    // APP_INITIALIZER, the welcome page and profile-home. smartech is injected
+    // by an external script that ad/tracker blockers prevent from loading, so
+    // the call is also typeof-guarded — analytics must never break the app.
+    bootstrapNetcore() {
+        const w = window as any
+        if (w.__netcoreBootstrapped) {
+            return
+        }
+        w.__netcoreBootstrapped = true
+        try {
+            if (typeof smartech === 'function') {
+                smartech('create', 'ADGMOT35CHFLVDHBJNIG50K968HALK3BMP0VCCVVE0PODR835I00', 'tin')
+                smartech('register', 'b632681d782c843e187fd5447c97ed4d')
+                smartech('identify', '')
+                smartech('dispatch', 1, {})
+            }
+        } catch (_e) {
+            // tracker blocked/unavailable — silently skip the bootstrap
+        }
+    }
+
     getOrgReadData(organisationId: string): Observable<any> {
     const request = {
         request: {

@@ -84,3 +84,124 @@ ul {
 ::ng-deep .pagination-dropdown .mat-mdc-option .mat-pseudo-checkbox-minimal {
   display: none !important;
 }
+
+// Keep all pagination controls on one row on M-web screens.
+@media screen and (max-width: 767px) {
+  :host(.compact-mobile-pagination) {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  :host(.compact-mobile-pagination) .ws-pagination-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding-right: 4px !important;
+    padding-left: 4px !important;
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  :host(.compact-mobile-pagination) .pagination-size-select {
+    flex: 0 0 52px;
+    min-width: 0;
+    gap: 0 !important;
+
+    span {
+      display: none !important;
+    }
+  }
+
+  :host(.compact-mobile-pagination) ul.pagination {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  :host(.compact-mobile-pagination) .pagination-listing {
+    width: 100%;
+    min-width: 0;
+    justify-content: space-between;
+
+    .page-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1 1 0;
+      width: auto;
+      min-width: 0;
+      max-width: 24px;
+      height: 24px;
+
+      .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        font-size: 10px;
+        line-height: 12px;
+      }
+
+      mat-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+        line-height: 18px;
+      }
+    }
+  }
+
+  :host(.compact-mobile-pagination) ::ng-deep .pagination-size-select.mat-full-radius-select mat-form-field {
+    width: 52px !important;
+    max-width: 52px !important;
+    height: 24px !important;
+    font-size: 10px !important;
+  }
+
+  :host(.compact-mobile-pagination) ::ng-deep .pagination-size-select.mat-full-radius-select {
+    .mat-form-field-wrapper,
+    .mat-form-field-flex,
+    .mat-form-field-infix,
+    .mat-select-trigger,
+    .mat-mdc-text-field-wrapper,
+    .mat-mdc-form-field-flex,
+    .mat-mdc-form-field-infix,
+    .mat-mdc-select-trigger {
+      height: 24px !important;
+      min-height: 24px !important;
+    }
+
+    .mat-form-field-infix,
+    .mat-mdc-form-field-infix {
+      padding: 0 !important;
+      border-top: 0 !important;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      padding-right: 8px !important;
+      padding-left: 8px !important;
+    }
+
+    .mat-select-trigger,
+    .mat-mdc-select-trigger {
+      align-items: center;
+    }
+
+    .mat-select-value,
+    .mat-select-value-text,
+    .mat-mdc-select-value,
+    .mat-mdc-select-value-text,
+    .mat-mdc-select-arrow,
+    .mat-select-arrow-wrapper {
+      font-size: 10px !important;
+      line-height: 12px !important;
+    }
+
+    .page-value {
+      margin-top: 0;
+    }
+  }
+}

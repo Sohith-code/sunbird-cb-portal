@@ -11,11 +11,11 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { FormsModule } from '@angular/forms'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Router } from '@angular/router'
-import { HttpClient } from '@angular/common/http'
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
+import { SafeHtml } from '@angular/platform-browser'
 import { Subscription } from 'rxjs'
 
 import { HomePageService } from '../../services/home-page.service'
+import { ZohoSupportService } from '../../services/zoho-support.service'
 import { ConfigurationsService, EventService, MultilingualTranslationsService } from '@sunbird-cb/utils-v2'
 import { DialogBoxComponent } from './../dialog-box/dialog-box.component'
 import { DialogBoxComponent as ZohoDialogComponent } from '@ws/app'
@@ -85,8 +85,7 @@ export class TopRightNavBarV2Component implements OnInit, OnDestroy {
   private configSvc = inject(ConfigurationsService)
   private langtranslations = inject(MultilingualTranslationsService)
   private translate = inject(TranslateService)
-  private http = inject(HttpClient)
-  private sanitizer = inject(DomSanitizer)
+  private zohoSupportSvc = inject(ZohoSupportService)
   private events = inject(EventService)
   private snackBar = inject(MatSnackBar)
   private router = inject(Router)
@@ -97,7 +96,6 @@ export class TopRightNavBarV2Component implements OnInit, OnDestroy {
 
   private dialogRef: any
   private subs: Subscription[] = []
-  private readonly zohoUrl = '/assets/static-data/zoho-code.html'
 
   constructor() {
     const storedLang = localStorage.getItem('websiteLanguage')
@@ -144,9 +142,11 @@ export class TopRightNavBarV2Component implements OnInit, OnDestroy {
       })
     )
 
-    this.http.get(this.zohoUrl, { responseType: 'text' }).subscribe(res => {
-      this.zohoHtml.set(this.sanitizer.bypassSecurityTrustHtml(res))
-    })
+    this.subs.push(
+      this.zohoSupportSvc.getZohoHtml().subscribe(res => {
+        this.zohoHtml.set(res)
+      })
+    )
   }
 
   ngOnDestroy() {

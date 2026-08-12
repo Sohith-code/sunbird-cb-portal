@@ -136,6 +136,7 @@
                             <ng-container *ngIf="seeAllResult && courseSearchTotalCount > initialPaginationSize">
                                 <div [ngClass]="{'md:mt-72': courseSearchResults.length < 3}">
                                     <ws-app-pagination class="learn-search-pagination"
+                                        [compactMobilePagination]="true"
                                         [defaultPaginationSize]="initialPaginationSize"
                                         [defaultPaginationSizeOptions]="initialPaginationSizeOptions"
                                         [totalItemsCount]="this.courseSearchTotalCount"
@@ -166,6 +167,7 @@
                             <ng-container *ngIf="seeAllResult && eventSearchTotalCount > initialPaginationSize">
                                 <div [ngClass]="{'md:mt-72': eventsSearchResults.length < 3}">
                                     <ws-app-pagination class="learn-search-pagination"
+                                        [compactMobilePagination]="true"
                                         [defaultPaginationSize]="initialPaginationSize"
                                         [defaultPaginationSizeOptions]="initialPaginationSizeOptions"
                                         [totalItemsCount]="this.eventSearchTotalCount"
@@ -219,6 +221,7 @@
                             <ng-container *ngIf="seeAllResult && peopleSearchTotalCount > initialPaginationSize">
                                 <div class="mt-4">
                                     <ws-app-pagination class="learn-search-pagination"
+                                        [compactMobilePagination]="true"
                                         [defaultPaginationSize]="initialPaginationSize"
                                         [defaultPaginationSizeOptions]="initialPaginationSizeOptions"
                                         [totalItemsCount]="this.peopleSearchTotalCount"
@@ -263,6 +266,7 @@
                             <ng-container *ngIf="seeAllResult && communitiesSearchTotalCount > initialPaginationSize">
                                 <div [ngClass]="{'md:mt-72': communitiesSearchResults.length < 3}">
                                     <ws-app-pagination class="learn-search-pagination"
+                                        [compactMobilePagination]="true"
                                         [defaultPaginationSize]="initialPaginationSize"
                                         [defaultPaginationSizeOptions]="initialPaginationSizeOptions"
                                         [totalItemsCount]="this.communitiesSearchTotalCount"
@@ -299,6 +303,7 @@
                             <ng-container *ngIf="seeAllResult && resourcesSearchTotalCount > initialPaginationSize">
                                 <div [ngClass]="{'md:mt-72': resourcesSearchResults.length < 3}">
                                     <ws-app-pagination class="learn-search-pagination"
+                                        [compactMobilePagination]="true"
                                         [defaultPaginationSize]="initialPaginationSize"
                                         [defaultPaginationSizeOptions]="initialPaginationSizeOptions"
                                         [totalItemsCount]="this.resourcesSearchTotalCount"
@@ -331,6 +336,7 @@
                             <ng-container *ngIf="seeAllResult && externalSearchTotalCount > initialPaginationSize">
                                 <div [ngClass]="{'md:mt-72': externalSearchResults.length < 3}">
                                     <ws-app-pagination class="learn-search-pagination"
+                                        [compactMobilePagination]="true"
                                         [defaultPaginationSize]="initialPaginationSize"
                                         [defaultPaginationSizeOptions]="initialPaginationSizeOptions"
                                         [totalItemsCount]="externalSearchTotalCount"

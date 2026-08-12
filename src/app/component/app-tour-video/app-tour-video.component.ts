@@ -37,7 +37,7 @@ export class AppTourVideoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.environment = environment
-    this.videoUrl = `https://${this.environment.sitePath}/assets/public/content/guide-videos/Website_Video.mp4`
+    this.videoUrl = `https://${this.environment.sitePath}/assets/public/content/guide-videos/Website_Video_v1.mp4`
     try {
       if (this.videoProgressTime > 0) {
         this.videoPlayedProgress = false

@@ -76,7 +76,7 @@ describe('AppTourComponent (No TestBed)', () => {
       expect(mockUserProfileSvc.editProfileDetails).toHaveBeenCalledWith({
         request: {
           userId: 'user-123',
-          profileDetails: { get_started_tour: status },
+          profileDetails: { get_started_tour_v2: status },
         },
       })
     })

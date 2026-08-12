@@ -52,3 +52,6 @@ Thumbs.db
 /src/assets
 package-lock.json
 .vscode/
+
+# Angular build cache
+/.angular/cache

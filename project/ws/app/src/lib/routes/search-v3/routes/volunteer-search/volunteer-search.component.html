@@ -61,7 +61,8 @@
 
                         <ng-container *ngIf="courseSearchTotalCount > initialPaginationSize">
                             <div [ngClass]="{'md:mt-72': courseSearchResults.length < 3}">
-                                <ws-app-pagination [defaultPaginationSize]="initialPaginationSize"
+                                <ws-app-pagination [compactMobilePagination]="true"
+                                    [defaultPaginationSize]="initialPaginationSize"
                                     [defaultPaginationSizeOptions]="initialPaginationSizeOptions"
                                     [totalItemsCount]="courseSearchTotalCount"
                                     [currentPage]="initialPaginationPage"

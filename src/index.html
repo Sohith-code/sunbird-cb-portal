@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <!-- Design System: FOUC Prevention - must be first script in head -->
   <script>
-  (function(){var k='kb-design-system-theme',s=null;try{s=localStorage.getItem(k)}catch(e){}var t=s==='dark'?'dark':s==='light'?'light':null;if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('theme-igot');document.documentElement.classList.add(t==='dark'?'night-mode':'day-mode')})();
+    (function () { var k = 'kb-design-system-theme', s = null; try { s = localStorage.getItem(k) } catch (e) { } var t = s === 'dark' ? 'dark' : s === 'light' ? 'light' : null; if (!t) { t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' } document.documentElement.setAttribute('data-theme', t); document.documentElement.classList.add('theme-igot'); document.documentElement.classList.add(t === 'dark' ? 'night-mode' : 'day-mode') })();
   </script>
   <title>iGot</title>
   <base href="/" />
@@ -33,81 +33,66 @@
   <!-- <link  rel='preload' as='stylesheet' href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap"> -->
   <!-- <script rel="preload" src="/assets/env.js" as="script"></script> -->
 
+  <!-- Resolve DNS + TLS for third-party origins in parallel with parsing -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.userway.org" crossorigin>
+  <link rel="preconnect" href="https://js.zohostatic.in" crossorigin>
+  <link rel="preconnect" href="https://cdnt.netcoresmartech.com">
+
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
-  <script rel="preload">
-    (async function getData() {
-      const url = "/assets/env.json"
-      try {
-        const response = await fetch(url, { cache: "no-cache" })
+  <!--
+    Env config. The request starts here, during head parsing, so it overlaps the bundle
+    download - but the promise is handed to main.ts (see loadEnv), which awaits it before
+    bootstrapping. That handshake is the point: the old version of this block populated
+    window.env with no handshake at all and raced main-*.js for it. env.json is fetched
+    no-cache and always hits the network, while main-*.js is served `immutable` and comes
+    off disk on a repeat visit, so the bundle could evaluate environment.ts first and die
+    with "Cannot read properties of undefined (reading 'name')" - blank page, no clue.
+
+    Assigning the whole document replaces the ~40-key copy that used to live here, which
+    silently dropped every env.json key nobody remembered to add to the list.
+
+    Never let this reject: main.ts attaches its handler a tick later, so a rejection here
+    would surface as an unhandled promise rejection first. Report and resolve; main.ts
+    guarantees window.env is at least an object before anything reads it.
+  -->
+  <script>
+    window['envReady'] = fetch('/assets/env.json', { cache: 'no-cache' })
+      .then(function (response) {
         if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`)
+          throw new Error('Response status: ' + response.status)
         }
-        const envJson = await response.json()
-        window["env"] = window["env"] || {}
-        // Environment variables
-        window["env"]["name"] = envJson.name
-        window["env"]["production"] = envJson.production
-        window["env"]["sitePath"] = envJson.sitePath
-        window["env"]["organisation"] = envJson.organisation
-        window["env"]["framework"] = envJson.framework
-        window["env"]["channelId"] = envJson.channelId
-        window["env"]["azureHost"] = envJson.azureHost
-        //window["env"]["contentHost"] = envJson. ;
-        window["env"]["azureBucket"] = envJson.azureBucket
-        window["env"]["azureOldHost"] = envJson.azureOldHost
-        window["env"]["azureOldBuket"] = envJson.azureOldBuket
-        window["env"]["contentHost"] = envJson.contentHost
-        window["env"]["contentBucket"] = envJson.contentBucket
-        window["env"]["certificateassets"] = envJson.certificateassets
-        window["env"]["missionKarmayogiPath"] = envJson.missionKarmayogiPath
-        window["env"]["helpEmail"] = envJson.helpEmail
-        window["env"]["staticHomePageUrl"] = envJson.staticHomePageUrl
-        window["env"]['cscmsUrl'] = envJson.cscmsUrl
-        window["env"]['dakshtaName'] = envJson.dakshtaName
-        window["env"]["contactMeetLink"] = envJson.contactMeetLink
-        window["env"]["karmayogiBharatLink"] = envJson.karmayogiBharatLink
-        window["env"]["meetingLinkDetail"] = envJson.meetingLinkDetail
-        window["env"]["programStripName"] = envJson.programStripName
-        window["env"]["programStripPrimaryCategory"] = envJson.programStripPrimaryCategory
-        window["env"]["programStripKey"] = envJson.programStripKey
-        window["env"]["quizResultTimeout"] = envJson.quizResultTimeout
-        window["env"]["assessmentBuffer"] = envJson.assessmentBuffer
-        window["env"]["cdnContentHost"] = envJson.cdnContentHost
-        window["env"]["cdnContentBucket"] = envJson.cdnContentBucket
-        window["env"]["dicussV2Bucket"] = envJson.dicussV2Bucket
-        window["env"]["spvorgID"] = envJson.spvorgID
-        window["env"]["mdoChannelsBookmarkId"] = envJson.mdoChannelsBookmarkId
-        window["env"]["apiCache"] = envJson.apiCache
-        window["env"]["portalRoles"] = envJson.portalRoles
-        window["env"]["portals"] = envJson.portals
-        window["env"]["recaptchaKey"] = envJson.recaptchaKey
-        window["env"]["supportEmail"] = envJson.supportEmail
-        window["env"]["providerDataKey"] = envJson.providerDataKey
-        window["env"]["resendOTPTIme"] = envJson.resendOTPTIme
-        window["env"]["compentencyVersionKey"] = envJson.compentencyVersionKey
-        window["env"]["cbcOrg"] = envJson.cbcOrg
-        window["env"]["doptOrg"] = envJson.doptOrg
-        window['env']['portalsForNotifications'] = envJson.portalsForNotifications
-        window['env']['publicContentSurveyId'] = envJson.publicContentSurveyId
-      } catch (error) {
-        console.error("Error in fetching env json")
-      }
-    })(this);
+        return response.json()
+      })
+      .then(function (envJson) {
+        window['env'] = Object.assign(window['env'] || {}, envJson)
+      })
+      .catch(function (error) {
+        console.error('Error in fetching env json', error)
+      })
   </script>
   <script>window.git_build = '{git-hash}';</script>
   <script>window.git_branch = '{git-branch}';</script>
   <META HTTP-EQUIV='content-type' CONTENT='text/html; charset=UTF-8'>
-  <link href="src\zoho-style.css">
-  <script src='https://js.zohostatic.in/support/app/js/jqueryandencoder.ffa5afd5124fbedceea9.js'
-    integrity="sha384-WxjccFdarXj9qC3CXtilb+x2qSQA3CMFOjT6vA0CkfexBVqYRAISERxH45f5VnmM"
-    crossorigin="anonymous"></script>
-  <script src="src\zoho-script.js"></script>
-  <script rel="preload" src='//cdnt.netcoresmartech.com/smartechclient.js'></script>
+  <!--
+    REMOVED: `src\zoho-style.css` and `src\zoho-script.js`.
+    Both used a backslash, which is not a URL path separator, so they resolved to
+    /src%5Czoho-*.  Neither file is listed in angular.json `assets`, so neither is
+    emitted to dist either - they were a render-blocking 404 and dead markup on every
+    page load.  The Zoho web-to-case form handler (zsWebToCase_120349000004451166) has
+    therefore been non-functional in production.  To restore it: add the files to
+    angular.json `assets` and load them from the contact page only, not globally.
+
+    MOVED BELOW: the zohostatic jQuery and UserWay widget tags are now attached by the
+    idle-loader at the end of <body> instead of loading during initial page load.
+  -->
+  <script defer src='//cdnt.netcoresmartech.com/smartechclient.js'></script>
   <script>
     //  smartech('create', 'ADGMOT35CHFLVDHBJNIG50K968HALK3BMP0VCCVVE0PODR835I00' , "tin");
     //  smartech('register', 'b632681d782c843e187fd5447c97ed4d');
@@ -179,32 +164,87 @@
 
   <!-- <script type="text/javascript" nonce="{place_your_nonce_value_here}" src="https://desk.zoho.in/portal/api/web/inapp/120349000000222059?orgId=60023043070" defer></script> -->
   <!-- <script src="https://desk.zoho.in/portal/api/feedbackwidget/120349000000212259?orgId=60023043070&displayType=popout"></script> -->
-  <script src="https://cdn.userway.org/widget.js" data-account="pam3S93IQ7"
-    integrity="sha384-Z3p55GwPaV0Y6nBmr3ezjEhuMtzgWxMcw78fcSukm0nPEt40UydxMAd18tSNNiCP"
-    crossorigin="anonymous"></script>
+  <!--
+    Third-party widgets, attached once the page has loaded and the browser is idle.
+
+    Previously UserWay was fetched TWICE - once by a parser-blocking script tag and
+    again by an inline injector that appended an identical tag to the body. Both ran
+    during initial page load, so widget.js (which builds its own iframe) competed with
+    the app bundles for bandwidth and main-thread time before first render.
+
+    Nothing here is needed for first paint:
+      - UserWay  : viewer.component.ts only reads the `.userway_p2` element inside a
+                   setTimeout, so it does not need the widget present at bootstrap.
+      - Zoho     : jqueryandencoder.js only backs the web-to-case form handler.
+
+    The `timeout` on requestIdleCallback caps the delay so the accessibility widget
+    still appears promptly on a busy main thread; it is deliberately NOT gated behind
+    user interaction, which would put it out of reach of the users who need it.
+    To override UserWay defaults (position, size, language, colour, type, mobile,
+    trigger), add the relevant data-* key to the `attrs` object below.
+  -->
   <script>
-    (function (d) {
-      var s = d.createElement("script")
-      /* uncomment the following line to override default position*/
-      /* s.setAttribute("data-position", 3);*/
-      /* uncomment the following line to override default size (values: small, large)*/
-      /* s.setAttribute("data-size", "small");*/
-      /* uncomment the following line to override default language (e.g., fr, de, es, he, nl, etc.)*/
-      /* s.setAttribute("data-language", "language");*/
-      /* uncomment the following line to override color set via widget (e.g., #053f67)*/
-      /* s.setAttribute("data-color", "#053e67");*/
-      /* uncomment the following line to override type set via widget (1=person, 2=chair, 3=eye, 4=text)*/
-      /* s.setAttribute("data-type", "1");*/
-      /* s.setAttribute("data-statement_text:", "Our Accessibility Statement");*/
-      /* s.setAttribute("data-statement_url", "http://www.example.com/accessibility")";*/
-      /* uncomment the following line to override support on mobile devices*/
-      /* s.setAttribute("data-mobile", true);*/
-      /* uncomment the following line to set custom trigger action for accessibility menu*/
-      /* s.setAttribute("data-trigger", "triggerId")*/
-      s.setAttribute("data-account", "pam3S93IQ7")
-      s.setAttribute("src", "https://cdn.userway.org/widget.js");
-      (d.body || d.head).appendChild(s)
-    })(document)
+    (function () {
+      var WIDGETS = [
+        {
+          // No `integrity` here, deliberately. cdn.userway.org/widget.js is an unversioned
+          // ~1.7 KB bootstrap that UserWay rewrites at will, so any pinned hash goes stale
+          // and the browser then blocks the script outright - which is exactly what the
+          // previously committed sha384-Z3p55G... hash was already doing. The widget only
+          // ever loaded because the old inline injector alongside it carried no integrity
+          // attribute. Pin a hash here again only if you also self-host a fixed copy.
+          src: 'https://cdn.userway.org/widget.js',
+          attrs: { 'data-account': 'pam3S93IQ7' },
+        },
+        {
+          src: 'https://js.zohostatic.in/support/app/js/jqueryandencoder.ffa5afd5124fbedceea9.js',
+          integrity: 'sha384-WxjccFdarXj9qC3CXtilb+x2qSQA3CMFOjT6vA0CkfexBVqYRAISERxH45f5VnmM',
+        },
+      ]
+
+      function attachWidgets() {
+        WIDGETS.forEach(function (widget) {
+          var el = document.createElement('script')
+          el.src = widget.src
+          el.async = true
+          if (widget.integrity) {
+            el.integrity = widget.integrity
+            el.crossOrigin = 'anonymous'
+          }
+          Object.keys(widget.attrs || {}).forEach(function (key) {
+            el.setAttribute(key, widget.attrs[key])
+          })
+          document.body.appendChild(el)
+        })
+      }
+
+      var attached = false
+      function attachOnce() {
+        if (attached) { return }
+        attached = true
+        attachWidgets()
+      }
+
+      function scheduleWidgets() {
+        if (typeof window.requestIdleCallback === 'function') {
+          window.requestIdleCallback(attachOnce, { timeout: 3000 })
+        } else {
+          window.setTimeout(attachOnce, 1500)
+        }
+      }
+
+      if (document.readyState === 'complete') {
+        scheduleWidgets()
+      } else {
+        window.addEventListener('load', scheduleWidgets, { once: true })
+      }
+
+      // Hard backstop, independent of `load`. The load event waits on every subresource
+      // (Google Fonts, the Zoho and Netcore CDNs), so a single hung third-party request
+      // would otherwise strand the accessibility widget indefinitely - the idle timeout
+      // above cannot help, because its clock only starts once `load` has fired.
+      window.setTimeout(attachOnce, 5000)
+    })()
   </script>
   <noscript>Please ensure Javascript is enabled for purposes of <a href="https://userway.org">website
       accessibility</a></noscript>

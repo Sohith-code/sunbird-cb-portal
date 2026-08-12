@@ -187,7 +187,7 @@ export class AppTourComponent implements OnChanges {
     const reqUpdates = {
       request: {
         userId: this.configSvc.unMappedUser.id,
-        profileDetails: { get_started_tour: status },
+        profileDetails: { get_started_tour_v2: status },
       },
     }
     this.userProfileSvc.editProfileDetails(reqUpdates).subscribe((_res: any) => {

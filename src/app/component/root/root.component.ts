@@ -44,12 +44,17 @@ import { combineLatest } from 'rxjs'
 import { MobileAppsService } from '../../services/mobile-apps.service'
 import { RootService } from './root.service'
 
-import { CsModule } from '@project-sunbird/client-services'
+// Explicit '/index' subpath: client-services@3.9.5 ships a broken package.json whose
+// `main` (dist/index.js) and `module` (src/index.ts) both point at files it does not
+// contain - the real entry is index.js at the package root. Node and esbuild fall back
+// to it silently, but the dev server's Vite dependency optimizer errors out with
+// "Failed to resolve entry for package". Naming the subpath skips entry resolution.
+import { CsModule } from '@project-sunbird/client-services/index'
 import { SwUpdate } from '@angular/service-worker'
 import { environment } from '../../../environments/environment'
 import { MatDialog } from '@angular/material/dialog'
 import { DialogConfirmComponent } from '../dialog-confirm/dialog-confirm.component'
-import { concat, interval, timer, of } from 'rxjs'
+import { concat, interval, of } from 'rxjs'
 // import { iGOTAIService } from './../../services/igot-ai.service'
 import { CommonDataService } from '../../services/common-data.service'
 import { UserRestrictionService } from '../../services/user-restriction.service'
@@ -69,7 +74,6 @@ const ACHIEVEMENT_SCROLL_GAP = 12
   selector: 'ws-root',
   templateUrl: './root.component.html',
   styleUrls: ['./root.component.scss'],
-  providers: [SwUpdate],
   standalone: false,
   animations: [
     trigger('slidePanel', [
@@ -100,6 +104,7 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
   // dataSubject = new BehaviorSubject<boolean>(false)
   menuBarDetails: any = {}
   private achievementsSection: any = null
+  private achievementRankRequested = false
   leftNavBarIsOpen = signal(true)
   showKarmaLeaderboard = signal(false)
   hideFooterSection = signal(false)
@@ -144,7 +149,9 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   ) {
     effect(() => {
-      if (!this.leftNavBarIsOpen()) {
+      if (this.leftNavBarIsOpen()) {
+        this.loadAchievementRankOnce()
+      } else {
         this.showKarmaLeaderboard.set(false)
       }
     })
@@ -160,9 +167,9 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
       this.menuBarDetails = this.configSvc.instanceConfig.leftNavBar || undefined
       if (this.menuBarDetails) {
         this.openStatusUserSelection.set(this.menuBarDetails.defaultOpen)
+        this.setNavOpenStatus()
         this.setAchivements()
         this.setOtherPortals()
-        this.setNavOpenStatus()
         // share the resolved config so pages outside the sidebar (mweb explore menu)
         // render the same items instead of resolving the config a second time
         this.commonDataSvc.leftNavBarConfig.next(this.menuBarDetails)
@@ -171,9 +178,9 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
       this.getLeftNavBarConfiguration().subscribe((sectionData: any) => {
         this.menuBarDetails = sectionData?.data || undefined
         if (this.menuBarDetails) {
+          this.setNavOpenStatus()
           this.setAchivements()
           this.setOtherPortals()
-          this.setNavOpenStatus()
           this.commonDataSvc.leftNavBarConfig.next(this.menuBarDetails)
         }
       })
@@ -187,9 +194,9 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
       // tslint: disable
     }
     if (this.configSvc.unMappedUser && this.configSvc.unMappedUser.profileDetails &&
-      this.configSvc.unMappedUser.profileDetails.get_started_tour) {
-      this.showTour = this.configSvc.unMappedUser.profileDetails.get_started_tour.skipped ||
-        this.configSvc.unMappedUser.profileDetails.get_started_tour.visited
+      this.configSvc.unMappedUser.profileDetails.get_started_tour_v2) {
+      this.showTour = this.configSvc.unMappedUser.profileDetails.get_started_tour_v2.skipped ||
+        this.configSvc.unMappedUser.profileDetails.get_started_tour_v2.visited
     }
     this.mobileAppsSvc.init()
     this.openIntro()
@@ -273,6 +280,17 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
     return /^\/app\/event-hub\/home\/[^/]+/.test(path)
   }
 
+  /**
+   * Bharat Kalp's landing page runs edge to edge, but its children stay in the centred
+   * container - see-all has its own breadcrumb and grid layout that assume it. Matching
+   * the exact path rather than a prefix is what keeps the two apart: startsWith would
+   * take /app/learn/bharat-kalp/see-all full screen too.
+   */
+  private isFullScreenBharatKalp(url: string): boolean {
+    const path = (url || '').split('?')[0].split('#')[0].replace(/\/+$/, '')
+    return path === '/app/learn/bharat-kalp'
+  }
+
   get showMenuBardetails(): boolean {
     // a NOT-MY-USER account has nowhere to navigate, so it gets no sidebar
     return this.menuBarDetails && this.currentUrl &&
@@ -292,9 +310,13 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
   @ViewChild('previewContainer', { read: ViewContainerRef, static: true })
   // @ViewChild('userIntro', { static: true }) userIntro!: TemplateRef<any>
   previewContainerViewRef: ViewContainerRef | null = null
-  @ViewChild('appUpdateTitle', { static: true })
+  // Not static: these inputs live inside the *ngIf on the root container, so a
+  // static query resolves them to null before change detection creates them and
+  // the update prompt opens with an empty title and body. The query is only read
+  // from the VERSION_READY subscription, which fires long after view init.
+  @ViewChild('appUpdateTitle')
   appUpdateTitleRef: ElementRef | null = null
-  @ViewChild('appUpdateBody', { static: true })
+  @ViewChild('appUpdateBody')
   appUpdateBodyRef: ElementRef | null = null
 
   @ViewChild('skipper') skipper!: ElementRef
@@ -494,6 +516,7 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
           this.currentUrl.startsWith('/app/toc') ||
           this.currentUrl.startsWith('/viewer/') ||
           this.isFullScreenEventPage(this.currentUrl) ||
+          this.isFullScreenBharatKalp(this.currentUrl) ||
           this.currentUrl.startsWith('/public/') ||
           // self-registration via QR: a standalone flow, so it gets the full width
           this.currentUrl.startsWith('/crp/')
@@ -621,8 +644,16 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
         this.achievementsSection = achievements
         achievements.sectionLoading = false
         this.sendDetailsChangedEvent(achievements)
+        this.loadAchievementRankOnce()
       } catch (_e) { /* ignore */ }
     }
+  }
+
+  private loadAchievementRankOnce() {
+    if (this.achievementRankRequested || !this.leftNavBarIsOpen() || !this.achievementsSection) {
+      return
+    }
+    this.updateAchievementRank()
   }
 
   private updateAchievementRank() {
@@ -632,6 +663,7 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
     if (!currentUserId || !rankItem) {
       return
     }
+    this.achievementRankRequested = true
     this.homePageSvc.getLearnerLeaderboardCached().subscribe((res: any) => {
       const results = res?.result?.result
       if (Array.isArray(results) && results.length) {
@@ -793,7 +825,7 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   ngAfterViewInit() {
-    // this.initAppUpdateCheck()
+    this.initAppUpdateCheck()
   }
 
   getChildRouteData(snapshot: ActivatedRouteSnapshot, firstChild: ActivatedRouteSnapshot | null) {
@@ -808,44 +840,55 @@ export class RootComponent implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   initAppUpdateCheck() {
-    // this.logger.log('LOGGING IN ROOT FOR PWA INIT CHECK')
-    if (environment.production) {
-      const appIsStable$ = this.appRef.isStable.pipe(
-        first(isStable => isStable),
-      )
-      const everySixHours$ = interval(6 * 60 * 60 * 1000)
-      const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$)
-      everySixHoursOnceAppIsStable$.subscribe(() => this.swUpdate.checkForUpdate())
-      if (this.swUpdate.isEnabled) {
-        // this.swUpdate.available.subscribe(() => {
+    if (!environment.production || !this.swUpdate.isEnabled) {
+      return
+    }
+
+    // A tab left open across a deployment keeps running the shell the service worker
+    // cached, but the next build deletes that shell's lazy chunks from the server. The
+    // first navigation to a route the user had not visited yet then fails with
+    //   Failed to fetch dynamically imported module: .../chunk-XXXXXXXX.js
+    // `unrecoverable` fires for exactly that - the cached version references assets the
+    // server no longer has. A full reload is the only way out: it fetches the current
+    // index.html, which names the chunks that do exist.
+    this.swUpdate.unrecoverable.subscribe(() => {
+      window.location.reload()
+    })
+
+    // Look for a new deployment once the app settles, then every six hours. Without
+    // this the client can sit on a stale build indefinitely.
+    const appIsStable$ = this.appRef.isStable.pipe(
+      first(isStable => isStable),
+    )
+    const everySixHours$ = interval(6 * 60 * 60 * 1000)
+    concat(appIsStable$, everySixHours$).subscribe(() => {
+      // Rejects when offline; the next tick retries, so failure is not worth surfacing.
+      this.swUpdate.checkForUpdate().catch(() => undefined)
+    })
+
+    // `SwUpdate.available` was removed in Angular 13 - versionUpdates replaces it, and
+    // VERSION_READY is the event that means the new version is fully downloaded and
+    // safe to activate. Subscribing unconditionally (as this did while `available` was
+    // commented out) opened the update prompt on every single load.
+    this.swUpdate.versionUpdates
+      .pipe(filter(evt => evt.type === 'VERSION_READY'))
+      .subscribe(() => {
         const dialogRef = this.dialog.open(DialogConfirmComponent, {
           data: {
             title: (this.appUpdateTitleRef && this.appUpdateTitleRef.nativeElement.value) || '',
             body: (this.appUpdateBodyRef && this.appUpdateBodyRef.nativeElement.value) || '',
           },
         })
-        dialogRef.afterClosed().subscribe(
-          result => {
-            if (result) {
-              this.swUpdate.activateUpdate().then(() => {
-                if ('caches' in window) {
-                  caches.keys()
-                    .then(keyList => {
-                      timer(2000).subscribe(
-                        _ => window.location.reload(),
-                      )
-                      return Promise.all(keyList.map(key => {
-                        return caches.delete(key)
-                      }))
-                    })
-                }
-              })
-            }
-          },
-        )
-        // })
-      }
-    }
+        dialogRef.afterClosed().subscribe(result => {
+          if (!result) {
+            return
+          }
+          // Do not clear the Cache Storage here. The previous version wiped every cache
+          // right after activating, which threw away the version that had just been
+          // installed and forced a full re-download on the next load.
+          this.swUpdate.activateUpdate().then(() => window.location.reload())
+        })
+      })
   }
 
   getTourGuide() {

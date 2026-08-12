@@ -20912,11 +20912,13 @@ video {
 }
 
 .decoration-slice {
-  box-decoration-break: slice;
+  -webkit-box-decoration-break: slice;
+          box-decoration-break: slice;
 }
 
 .decoration-clone {
-  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+          box-decoration-break: clone;
 }
 
 .bg-auto {
@@ -20956,7 +20958,8 @@ video {
 }
 
 .bg-clip-text {
-  background-clip: text;
+  -webkit-background-clip: text;
+          background-clip: text;
 }
 
 .bg-bottom {
@@ -50486,11 +50489,13 @@ video {
   }
 
   .sm\:decoration-slice {
-    box-decoration-break: slice;
+    -webkit-box-decoration-break: slice;
+            box-decoration-break: slice;
   }
 
   .sm\:decoration-clone {
-    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
   }
 
   .sm\:bg-auto {
@@ -50530,7 +50535,8 @@ video {
   }
 
   .sm\:bg-clip-text {
-    background-clip: text;
+    -webkit-background-clip: text;
+            background-clip: text;
   }
 
   .sm\:bg-bottom {
@@ -79708,11 +79714,13 @@ video {
   }
 
   .md\:decoration-slice {
-    box-decoration-break: slice;
+    -webkit-box-decoration-break: slice;
+            box-decoration-break: slice;
   }
 
   .md\:decoration-clone {
-    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
   }
 
   .md\:bg-auto {
@@ -79752,7 +79760,8 @@ video {
   }
 
   .md\:bg-clip-text {
-    background-clip: text;
+    -webkit-background-clip: text;
+            background-clip: text;
   }
 
   .md\:bg-bottom {
@@ -108930,11 +108939,13 @@ video {
   }
 
   .lg\:decoration-slice {
-    box-decoration-break: slice;
+    -webkit-box-decoration-break: slice;
+            box-decoration-break: slice;
   }
 
   .lg\:decoration-clone {
-    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
   }
 
   .lg\:bg-auto {
@@ -108974,7 +108985,8 @@ video {
   }
 
   .lg\:bg-clip-text {
-    background-clip: text;
+    -webkit-background-clip: text;
+            background-clip: text;
   }
 
   .lg\:bg-bottom {
@@ -138152,11 +138164,13 @@ video {
   }
 
   .xl\:decoration-slice {
-    box-decoration-break: slice;
+    -webkit-box-decoration-break: slice;
+            box-decoration-break: slice;
   }
 
   .xl\:decoration-clone {
-    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
   }
 
   .xl\:bg-auto {
@@ -138196,7 +138210,8 @@ video {
   }
 
   .xl\:bg-clip-text {
-    background-clip: text;
+    -webkit-background-clip: text;
+            background-clip: text;
   }
 
   .xl\:bg-bottom {
@@ -167374,11 +167389,13 @@ video {
   }
 
   .\32xl\:decoration-slice {
-    box-decoration-break: slice;
+    -webkit-box-decoration-break: slice;
+            box-decoration-break: slice;
   }
 
   .\32xl\:decoration-clone {
-    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
   }
 
   .\32xl\:bg-auto {
@@ -167418,7 +167435,8 @@ video {
   }
 
   .\32xl\:bg-clip-text {
-    background-clip: text;
+    -webkit-background-clip: text;
+            background-clip: text;
   }
 
   .\32xl\:bg-bottom {

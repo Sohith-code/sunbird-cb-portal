@@ -35,16 +35,22 @@ export class profileResolver {
     const configDetails: ConfigDetails = {
       defaultUrl: '',
       urlConfigPath: 'profileV1Basic',
-      apiConfig: apiConfig,
+      apiConfig,
     }
     return this.profileSvc.fetchProfile(configDetails, userId, isNotCurrentUser).pipe(
-      map(data => ({
-        data: _.merge(_.get(data, 'result.response') || {}, {
-          professionalDetails: this.configSvc.userProfile?.professionalDetails,
-        }),
-        error: null,
-        userId,
-      })),
+      map(data => {
+        const profileData = _.get(data, 'result.response') || {}
+        if (!isNotCurrentUser) {
+          _.merge(profileData, {
+            professionalDetails: this.configSvc.userProfile?.professionalDetails,
+          })
+        }
+        return {
+          userId,
+          data: profileData,
+          error: null,
+        }
+      }),
       catchError(error => of({ error, data: null })),
     )
   }

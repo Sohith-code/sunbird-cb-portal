@@ -39,11 +39,18 @@
     </div>
   </div>
 
-  <!-- Content type line tabs -->
-  <mat-tab-group class="bk-see-all__tabs" animationDuration="0ms" [selectedIndex]="activeTabIndex" [mat-stretch-tabs]="false"
-    (selectedIndexChange)="onTabChange($event)">
-    <mat-tab *ngFor="let tab of contentTypeTabs; trackBy: trackTabKey" [label]="tab.label"></mat-tab>
-  </mat-tab-group>
+  <!-- Content type line tabs.
+       Rebuilt per week: the week handlers already reset activeTabIndex to 0, but it was 0
+       before too, so the [selectedIndex] binding never changes value and Angular pushes
+       nothing to mat-tab-group - which then keeps the selection from the previous week's
+       tab list. Recreating the group makes it read selectedIndex afresh; the single-item
+       ngFor is just a way to key it by week, since Angular has no key directive. -->
+  <ng-container *ngFor="let wk of [selectedWeek]; trackBy: trackTabGroup">
+    <mat-tab-group class="bk-see-all__tabs" animationDuration="0ms" [selectedIndex]="activeTabIndex" [mat-stretch-tabs]="false"
+      (selectedIndexChange)="onTabChange($event)">
+      <mat-tab *ngFor="let tab of contentTypeTabs; trackBy: trackTabKey" [label]="tab.label"></mat-tab>
+    </mat-tab-group>
+  </ng-container>
 
   <!-- Status filter pills — inside tabs area (resources aren't enrollable/trackable, so no status filter) -->
   <div class="bk-see-all__status-pills" *ngIf="!isActiveTabResources">

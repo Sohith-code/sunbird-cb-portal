@@ -35,7 +35,6 @@ import { NetCoreService } from './netcore.service'
 import { BtnSettingsService } from '@sunbird-cb/collection'
 import { GlobalService } from './global.service'
 import { CommonDataService } from './common-data.service'
-declare const smartech: any
 // import { of } from 'rxjs'
 /* tslint:enable */
 // interface IDetailsResponse {
@@ -514,10 +513,7 @@ export class InitService {
             if (orgData && orgData['netcoreDisabled']) {
 
             } else {
-              smartech('create', 'ADGMOT35CHFLVDHBJNIG50K968HALK3BMP0VCCVVE0PODR835I00', "tin")
-              smartech('register', 'b632681d782c843e187fd5447c97ed4d')
-              smartech('identify', '')
-              smartech('dispatch', 1, {})
+              this.netCoreService.bootstrapNetcore()
               if (this.configSvc.netcoreConfig && this.configSvc.netcoreConfig.netcoreWebConfig
                 && this.configSvc.netcoreConfig.netcoreWebConfig.isActive
               ) {

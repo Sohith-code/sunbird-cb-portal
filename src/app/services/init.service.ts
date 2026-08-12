@@ -31,7 +31,6 @@ import { NetCoreService } from './netcore.service'
 import { BtnSettingsService } from '@sunbird-cb/collection'
 import { CommonDataService } from './common-data.service'
 import { FormExtService } from './form-ext.service'
-declare const smartech: any
 /* tslint:enable */
 
 @Injectable({
@@ -457,10 +456,7 @@ export class InitService {
           this.netCoreService.getOrgReadData(userProfile.rootOrgId).subscribe(orgData => {
             this.configSvc.orgReadData = orgData
             if (!(orgData && orgData['netcoreDisabled'])) {
-              smartech('create', 'ADGMOT35CHFLVDHBJNIG50K968HALK3BMP0VCCVVE0PODR835I00', 'tin')
-              smartech('register', 'b632681d782c843e187fd5447c97ed4d')
-              smartech('identify', '')
-              smartech('dispatch', 1, {})
+              this.netCoreService.bootstrapNetcore()
               if (this.configSvc.netcoreConfig && this.configSvc.netcoreConfig.netcoreWebConfig
                 && this.configSvc.netcoreConfig.netcoreWebConfig.isActive
               ) {

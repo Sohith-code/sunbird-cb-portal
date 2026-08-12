@@ -83,12 +83,20 @@ export class AppInterceptorService implements HttpInterceptor {
                   if (localStorage.getItem('telemetrySessionId')) {
                     localStorage.removeItem('telemetrySessionId')
                   }
-                  if (localUrl.includes('localhost')) {
+                  // Only redirect if we are not already sitting on the login entry point.
+                  // Without this, a login URL that fails to leave the SPA - e.g. the
+                  // service worker answering /protected/** with cached index.html - makes
+                  // this handler send the browser to the page it is already on, the app
+                  // boots again, its startup calls 419 again, and the cycle repeats until
+                  // the tab is closed (observed: 1487 requests over 3.3 min).
+                  // new URL(..., origin) normalises both forms the backend may send -
+                  // a bare path and a fully qualified URL - down to a comparable pathname.
+                  if (error.error && error.error.redirectUrl
+                      && !location.pathname.startsWith(
+                        new URL(String(error.error.redirectUrl), localUrl).pathname)) {
                     // tslint:disable-next-line: prefer-template
-                    window.location.href = error.error.redirectUrl + `?redirect_uri=${encodeURIComponent(pagePath)}`
-                  } else {
-                    // tslint:disable-next-line: prefer-template
-                    window.location.href = error.error.redirectUrl + `?redirect_uri=${encodeURIComponent(pageName)}`
+                    window.location.href = error.error.redirectUrl
+                      + `?redirect_uri=${encodeURIComponent(localUrl.includes('localhost') ? pagePath : pageName)}`
                   }
                   // if (!window.location.href.includes('/public/home')) {
                   //   this.router.navigate(['public', 'home'])

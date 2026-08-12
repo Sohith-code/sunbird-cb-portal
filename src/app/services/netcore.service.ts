@@ -39,6 +39,23 @@ export class NetCoreService {
         }
     }
 
+    // The tracker bootstrap must run at most once per page load. init() is
+    // reachable from the APP_INITIALIZER, the welcome page and profile-home,
+    // and this service is duplicated under project/ws/app — two classes, two
+    // instances — so the guard has to live on a global marker. Instance state
+    // would not be shared between them and the quartet would still repeat.
+    bootstrapNetcore() {
+        const w = window as any
+        if (w.__netcoreBootstrapped) {
+            return
+        }
+        w.__netcoreBootstrapped = true
+        this.callSmartech('create', 'ADGMOT35CHFLVDHBJNIG50K968HALK3BMP0VCCVVE0PODR835I00', 'tin')
+        this.callSmartech('register', 'b632681d782c843e187fd5447c97ed4d')
+        this.callSmartech('identify', '')
+        this.callSmartech('dispatch', 1, {})
+    }
+
     getOrgReadData(organisationId: string): Observable<any> {
     const request = {
         request: {

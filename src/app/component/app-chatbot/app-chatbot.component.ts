@@ -84,7 +84,6 @@ export class AppChatbotComponent implements OnInit, AfterViewChecked, OnChanges 
     private router: Router) { }
 
   ngOnInit() {
-    console.log("enableSupportAI", this.enableSupportAI)
     this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         //certificate link check
@@ -95,9 +94,7 @@ export class AppChatbotComponent implements OnInit, AfterViewChecked, OnChanges 
 
 
 
-    console.log('this.userInfo--', this.userInfo)
-    // console.log('this.configSvc.iGOTAIConfig--', this.configSvc.iGOTAIConfig)
-    // console.log()
+  
     if (this.rootOrgId && this.iGOTAIConfigLoaded) {
       if (this.userInfo?.professionalDetails && this.userInfo?.professionalDetails?.length) {
         this.userDesignation = this.userInfo?.professionalDetails[0]['designation']?.trim()

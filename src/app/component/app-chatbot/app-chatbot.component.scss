@@ -635,117 +635,118 @@
   box-sizing: border-box;
   background-color: #F0F3F4;
 }
+
 .cb-content-wrapper-ai.input-enabled {
   bottom: 121px;
 }
 
-.cb-content-sarthi {
-  background: url('/assets/ai-tutor/background.svg');
-  background-color: #F0F3F4;
-  overflow-y: auto;
-  overflow-x: hidden;
-  position: relative;
-  height: 100%;
+        .cb-content-sarthi {
+          background: url('/assets/ai-tutor/background.svg');
+          background-color: #F0F3F4;
+          overflow-y: auto;
+          overflow-x: hidden;
+          position: relative;
+          height: 100%;
 
-  // background: url('your-image.jpg');
-  // background-size: contain;
-  // background-position: center;
-  background-color: rgba(255, 255, 255, 0.9);
-  background-blend-mode: overlay;
+    // background: url('your-image.jpg');
+      // background-size: contain;
+      // background-position: center;
+      background-color: rgba(255, 255, 255, 0.9);
+      background-blend-mode: overlay;
+    }
+
+        // .cb-content-sarthi::before {
+        //   content: '';
+        //   position: absolute;
+        //   top: 0;
+        //   left: 0;
+        //   right: 0;
+        //   bottom: 0;
+        //   background-color: rgba(255, 255, 255, 0.9); /* Adjust opacity here */
+        //   z-index: 1; /* Make sure the opacity is above the background image */
+        // }
+                                @media only screen and (max-width: 600px) and (orientation: portrait) {
+                                  .cb-footer-wrapper {
+                                    position: absolute;
+                                    width: 100%;
+                                    bottom: 0px;
+                                  }
+                                }
+
+.cb-footer-wrapper {
+  position: absolute;
+  width: 100%;
+  bottom: 60px;
 }
 
-// .cb-content-sarthi::before {
-//   content: '';
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-//   background-color: rgba(255, 255, 255, 0.9); /* Adjust opacity here */
-//   z-index: 1; /* Make sure the opacity is above the background image */
-// }
-@media only screen and (max-width: 600px) and (orientation: portrait) {
-  .cb-footer-wrapper {
-    position: absolute;
-    width: 100%;
-    bottom: 0px;
-  }
-}
+        .my-5px {
+          margin-top: 5px;
+          margin-bottom: 5px
+        }
 
-        .cb-footer-wrapper {
-          position: absolute;
-          width: 100%;
-      bottom: 0px;
-}
+        .mr-5px {
+          margin-right: 5px
+        }
 
-.my-5px {
-  margin-top: 5px;
-  margin-bottom: 5px
-}
+        *,
+        ::after,
+        ::before {
+          box-sizing: border-box;
+        }
 
-.mr-5px {
-  margin-right: 5px
-}
+        ::ng-deep .disable-scroll {
+          overflow-x: hidden !important;
+          overflow: hidden;
+        }
 
-*,
-::after,
-::before {
-  box-sizing: border-box;
-}
+        @media only screen and (max-width: 600px) {
+          .chatbot {
+            right: 0px;
+            bottom: 0px;
+            width: 100%;
+            height: 100svh;
+            z-index: 999999999;
+          }
 
-::ng-deep .disable-scroll {
-  overflow-x: hidden !important;
-  overflow: hidden;
-}
+                .cb-footer-wrapper {
+                  bottom: 0px;
+                }
 
-@media only screen and (max-width: 600px) {
-  .chatbot {
-    right: 0px;
-    bottom: 0px;
-    width: 100%;
-    height: 100svh;
-    z-index: 999999999;
-  }
+                .cb-content-wrapper {
+                  bottom: 152px;
+                }
 
-  .cb-footer-wrapper {
-    bottom: 0px;
-  }
+                .cb-content-wrapper-ai {
+                  bottom: 130px;
+                }
 
-  .cb-content-wrapper {
-    bottom: 152px;
-  }
+                .chatbot-icon-container {
+                  bottom: 190px;
+                }
 
-  .cb-content-wrapper-ai {
-    bottom: 130px;
-  }
+                .cb-header {
+                  border-top-left-radius: unset;
+                  border-top-right-radius: unset;
+                }
 
-  .chatbot-icon-container {
-    bottom: 190px;
-  }
+                .cb-footer {
+                  border-bottom-left-radius: unset;
+                  border-bottom-right-radius: unset;
+                }
 
-  .cb-header {
-    border-top-left-radius: unset;
-    border-top-right-radius: unset;
-  }
+                .cb-footer-with-ai {
+                  border-bottom-left-radius: unset;
+                  border-bottom-right-radius: unset;
+                }
 
-  .cb-footer {
-    border-bottom-left-radius: unset;
-    border-bottom-right-radius: unset;
-  }
+                .br-br {
+                  border-bottom-right-radius: unset;
+                }
 
-  .cb-footer-with-ai {
-    border-bottom-left-radius: unset;
-    border-bottom-right-radius: unset;
-  }
-
-  .br-br {
-    border-bottom-right-radius: unset;
-  }
-
-  .br-bl {
-    border-bottom-left-radius: unset;
-  }
-}
+                .br-bl {
+                  border-bottom-left-radius: unset;
+                }
+                }
 
 .vertical-middle {
   vertical-align: middle;
@@ -755,14 +756,14 @@
 @keyframes bounce {
 
   0%,
-  100% {
-    transform: translateY(0);
-  }
+    100% {
+      transform: translateY(0);
+    }
 
-  50% {
-    transform: translateY(-12px);
-  }
-}
+                50% {
+                  transform: translateY(-12px);
+                }
+                }
 
 .bounce-icon {
   display: inline-block;
@@ -856,12 +857,13 @@
   /* background-color: #1E5AC2;
 
   border-radius: 48px 48px 0 48px;
-  border: 3px solid #81A3EB; */
-  /* box-shadow: 0px 3px 2px rgb(113 101 101); */
-  // background-image: url("/assets/icons/circle.svg");
-  background-position: center;
-  text-align: center;
-}
+    border: 3px solid #81A3EB;
+    */
+    /* box-shadow: 0px 3px 2px rgb(113 101 101); */
+    // background-image: url("/assets/icons/circle.svg");
+    background-position: center;
+    text-align: center;
+  }
 
 .fullscreen {
   display: block;
@@ -876,68 +878,68 @@
     display: none;
   }
 
-  .fullscreen-chat-exit {
-    display: none;
-  }
+                .fullscreen-chat-exit {
+                  display: none;
+                }
 
-  .cb-header .user-info-div {
-    width: 75%;
-    justify-content: space-between;
-  }
+                .cb-header .user-info-div {
+                  width: 75%;
+                  justify-content: space-between;
+                }
 
-  .chatbot-with-ai {
-    width: 100%;
-    position: fixed;
-    /* fixed might be better for mobile full-screen */
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    z-index: 9999;
-    border-radius: 15px;
-    background-color: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
-    height: 100%;
-  }
+                .chatbot-with-ai {
+                  width: 100%;
+                  position: fixed;
+                  /* fixed might be better for mobile full-screen */
+                  top: 0;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  margin: auto;
+                  z-index: 9999;
+                  border-radius: 15px;
+                  background-color: white;
+                  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
+                  height: 100%;
+                }
 
-  .cb-header-sarthi .user-info-div {
-    width: 70%;
-    justify-content: space-between;
-  }
+                .cb-header-sarthi .user-info-div {
+                  width: 70%;
+                  justify-content: space-between;
+                }
 
-  .cb-content-sarthi {
-    background: url('/assets/ai-tutor/background.svg');
-    background-color: #F0F3F4;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: relative;
-    height: 100%;
+                .cb-content-sarthi {
+                  background: url('/assets/ai-tutor/background.svg');
+                  background-color: #F0F3F4;
+                  overflow-y: auto;
+                  overflow-x: hidden;
+                  position: relative;
+                  height: 100%;
 
     // background: url('your-image.jpg');
-    // background-size: contain;
-    // background-position: center;
-    background-color: rgba(255, 255, 255, 0.9);
-    background-blend-mode: overlay;
-    padding: 0 !important
-  }
+      // background-size: contain;
+      // background-position: center;
+      background-color: rgba(255, 255, 255, 0.9);
+      background-blend-mode: overlay;
+      padding: 0 !important
+    }
 
-  .chatbot-with-ai-min {
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: 9999;
-    border-radius: 15px;
-    background-color: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2392156863);
-    height: 70px;
-  }
+                .chatbot-with-ai-min {
+                  width: 100%;
+                  position: fixed;
+                  bottom: 0;
+                  right: 0;
+                  left: 0;
+                  z-index: 9999;
+                  border-radius: 15px;
+                  background-color: white;
+                  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2392156863);
+                  height: 70px;
+                }
 
-  .lang-select[_ngcontent-ng-c68842119] {
-    width: 63px;
-  }
+                .lang-select[_ngcontent-ng-c68842119] {
+                  width: 63px;
+                }
 
 
 }
@@ -947,64 +949,64 @@
     display: none;
   }
 
-  .fullscreen-chat-exit {
-    display: none;
-  }
+                .fullscreen-chat-exit {
+                  display: none;
+                }
 
-  .cb-header .user-info-div {
-    width: 79%;
-    justify-content: space-between;
-  }
+                .cb-header .user-info-div {
+                  width: 79%;
+                  justify-content: space-between;
+                }
 
-  .chatbot-with-ai {
-    width: 100%;
-    position: fixed;
-    /* fixed might be better for mobile full-screen */
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    z-index: 9999;
-    border-radius: 15px;
-    background-color: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
-    height: 100%;
-  }
+                .chatbot-with-ai {
+                  width: 100%;
+                  position: fixed;
+                  /* fixed might be better for mobile full-screen */
+                  top: 0;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  margin: auto;
+                  z-index: 9999;
+                  border-radius: 15px;
+                  background-color: white;
+                  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
+                  height: 100%;
+                }
 
-  .cb-header-sarthi .user-info-div {
-    width: 70%;
-    justify-content: space-between;
-  }
+                .cb-header-sarthi .user-info-div {
+                  width: 70%;
+                  justify-content: space-between;
+                }
 
-  .cb-content-sarthi {
-    background: url('/assets/ai-tutor/background.svg');
-    background-color: #F0F3F4;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: relative;
-    height: 100%;
+                .cb-content-sarthi {
+                  background: url('/assets/ai-tutor/background.svg');
+                  background-color: #F0F3F4;
+                  overflow-y: auto;
+                  overflow-x: hidden;
+                  position: relative;
+                  height: 100%;
 
     // background: url('your-image.jpg');
-    // background-size: contain;
-    // background-position: center;
-    background-color: rgba(255, 255, 255, 0.9);
-    background-blend-mode: overlay;
-    padding: 0 !important
-  }
+      // background-size: contain;
+      // background-position: center;
+      background-color: rgba(255, 255, 255, 0.9);
+      background-blend-mode: overlay;
+      padding: 0 !important
+    }
 
-  .chatbot-with-ai-min {
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: 9999;
-    border-radius: 15px;
-    background-color: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2392156863);
-    height: 70px;
-  }
+                .chatbot-with-ai-min {
+                  width: 100%;
+                  position: fixed;
+                  bottom: 0;
+                  right: 0;
+                  left: 0;
+                  z-index: 9999;
+                  border-radius: 15px;
+                  background-color: white;
+                  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2392156863);
+                  height: 70px;
+                }
 
 }
 
@@ -1013,38 +1015,38 @@
     display: none;
   }
 
-  .fullscreen-chat-exit {
-    display: none;
-  }
+                .fullscreen-chat-exit {
+                  display: none;
+                }
 
-  .chatbot-with-ai {
-    width: 100%;
-    position: fixed;
-    /* fixed might be better for mobile full-screen */
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    z-index: 9999;
-    border-radius: 15px;
-    background-color: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
-    height: 100%;
-  }
+                .chatbot-with-ai {
+                  width: 100%;
+                  position: fixed;
+                  /* fixed might be better for mobile full-screen */
+                  top: 0;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  margin: auto;
+                  z-index: 9999;
+                  border-radius: 15px;
+                  background-color: white;
+                  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
+                  height: 100%;
+                }
 
-  .cb-header-sarthi .user-info-div {
-    width: 80%;
-    justify-content: space-between;
-  }
+                .cb-header-sarthi .user-info-div {
+                  width: 80%;
+                  justify-content: space-between;
+                }
 
-  .cb-content-sarthi {
-    background: url('/assets/ai-tutor/background.svg');
-    background-color: #F0F3F4;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: relative;
-    height: 100%;
+                .cb-content-sarthi {
+                  background: url('/assets/ai-tutor/background.svg');
+                  background-color: #F0F3F4;
+                  overflow-y: auto;
+                  overflow-x: hidden;
+                  position: relative;
+                  height: 100%;
 
     // background: url('your-image.jpg');
     // background-size: contain;

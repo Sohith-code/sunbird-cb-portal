@@ -59,6 +59,7 @@
 
     <ng-container *ngIf="courses.length > 0">
       <ws-app-pagination
+        [compactMobilePagination]="true"
         [defaultPaginationSize]="initialPaginationSize"
         [defaultPaginationSizeOptions]="initialPaginationSizeOptions"
         [totalItemsCount]="courses?.length"

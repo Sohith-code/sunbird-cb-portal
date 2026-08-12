@@ -472,13 +472,19 @@ export class ProfileV2RevampService {
     return this.http.put<any>(url, payload)
   }
 
-  listAchievements(configDetails: ConfigDetails, _userId: any): Observable<any> {
+  listAchievements(configDetails: ConfigDetails, userId: string): Observable<any> {
     configDetails['defaultUrl'] = API_END_POINTS.LIST_ACHIEVEMENTS
     const url = this.commonMethodsService.getEnabledUrl(configDetails)
     if (!url) {
       return of('')
     }
-    return this.http.get<any>(`${url}`)
+
+    const loggedInUserId = _.get(this.configSvc, 'userProfile.userId', '')
+    if (userId && userId !== loggedInUserId) {
+      return this.http.get<any>(url, { params: { id: userId } })
+    }
+
+    return this.http.get<any>(url)
   }
 
   deleteAchievementEntry(payload: any, configDetails: ConfigDetails): Observable<any> {

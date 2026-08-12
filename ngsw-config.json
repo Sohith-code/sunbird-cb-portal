@@ -1,6 +1,23 @@
 {
   "$schema": "./node_modules/@angular/service-worker/config/schema.json",
   "index": "/index.html",
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**",
+    "!/apis/**",
+    "!/auth/**",
+    "!/protected/**",
+    "!/LA/**",
+    "!/ScormCoursePlayer/**",
+    "!/training-pla-ai",
+    "!/training-pla-ai/**",
+    "!/ai-assessment",
+    "!/ai-assessment/**",
+    "!/mentorship",
+    "!/mentorship/**"
+  ],
   "assetGroups": [
     {
       "name": "app",
@@ -8,9 +25,22 @@
       "resources": {
         "files": [
           "/favicon.ico",
-          "index.html",
+          "/index.html",
           "/manifest.webmanifest",
           "/*.css",
+          "/main-*.js",
+          "/polyfills-*.js",
+          "/scripts-*.js",
+          "/runtime-*.js"
+        ]
+      }
+    },
+    {
+      "name": "chunks",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "resources": {
+        "files": [
           "/*.js"
         ]
       }

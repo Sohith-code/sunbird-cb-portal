@@ -62,8 +62,8 @@ export class BharatKalpSeeAllComponent implements OnInit {
      Not Started  = identifier NOT in enrollment
      In Progress  = in enrollment AND completionPercentage < 100
      Completed    = in enrollment AND completionPercentage >= 100              */
-  private _getStatus(identifier: string): 'Not Started' | 'In Progress' | 'Completed' {
-    if (!this.enrollmentMap.hasOwnProperty(identifier)) return 'Not Started'
+  private _getStatus(identifier: string | undefined): 'Not Started' | 'In Progress' | 'Completed' {
+    if (!identifier || !this.enrollmentMap.hasOwnProperty(identifier)) return 'Not Started'
     return this.enrollmentMap[identifier] >= 100 ? 'Completed' : 'In Progress'
   }
 
@@ -71,20 +71,27 @@ export class BharatKalpSeeAllComponent implements OnInit {
   private _loadEnrollmentForExt(allIds: string[]): void {
     const userId = (this.configSvc as any)?.userProfile?.userId
     if (!allIds.length || !userId) return
+
+    /* This endpoint answers for one course at a time and returns the enrolment flat on
+       `result`, with lowercase keys (completionpercentage, courseid) - not the
+       `result.courses` array of camelCase objects the internal enrolment API returns.
+       Reading it the internal way always produced an empty map, so every external card
+       fell through to 'Not Started' no matter how far along it actually was. */
+    this.enrollmentMap = {}
     allIds.forEach(id => {
       this.http.get<any>(
         `/apis/proxies/v8/cios-enroll/v1/readby/useridcourseid/${id}`,
       ).pipe(catchError(() => of(null)))
         .subscribe(res => {
-          const map: { [id: string]: number } = {};
-          ([res?.result?.courses || []]).forEach((c: any) => {
-            const id = c.contentId
-            if (id) map[id] = c.completionPercentage ?? 0
-          })
-          this.enrollmentMap = map
+          const enrolment = res?.result
+          if (!enrolment) return
+          const percentage = enrolment.completionpercentage ?? enrolment.progress ?? 0
+          /* Keyed by the id we asked for - that is the card's contentId, so the lookup
+             in _getStatus always matches. Merged rather than reassigned: each id is its
+             own request, and replacing the map per response kept only the last to land. */
+          this.enrollmentMap = { ...this.enrollmentMap, [id]: percentage }
         })
     })
-
   }
 
   private _loadEnrollment(allIds: string[]): void {
@@ -119,7 +126,7 @@ export class BharatKalpSeeAllComponent implements OnInit {
     const qWeek = this.route.snapshot.queryParams?.['week']
     const requestedWeek = qWeek ? +qWeek : ALL_WEEKS
     this.selectedWeek = requestedWeek
-    this._fetchContent()
+    this._fetchActiveTabContent()
   }
 
   private _parseBkDate(dateStr: string): Date {
@@ -172,8 +179,23 @@ export class BharatKalpSeeAllComponent implements OnInit {
     return Array.from(keys).map(key => ({ key, label: this._tabLabel(key) }))
   }
 
-  /** Derives a display label straight from the content_ids key — e.g. "course" -> "Courses" */
+  /**
+   * Display label for a content-type tab.
+   *
+   * Prefers the authored exploreContent.tabs entry matched on `id`, so the label reads
+   * as configured per language — "extCourses" is meant to show "External Course", not
+   * the key-derived "ExtCourses". Falls back to deriving from the key so a content type
+   * that has no entry yet still gets a usable tab instead of a blank one. Kept in step
+   * with the same lookup in week-progress, which feeds the strip on the landing page.
+   */
   private _tabLabel(key: string): string {
+    const configured = (this.weekProgress?.exploreContent?.tabs || [])
+      .find((t: any) => t?.id === key)
+    if (configured) {
+      const lang = localStorage.getItem('websiteLanguage') || 'en'
+      const label = configured[`${lang}Text`] || configured.enText
+      if (label) return label
+    }
     const capitalized = key.charAt(0).toUpperCase() + key.slice(1)
     return capitalized.endsWith('s') ? capitalized : `${capitalized}s`
   }
@@ -205,6 +227,22 @@ export class BharatKalpSeeAllComponent implements OnInit {
     /* Specific week */
     const wd = this.weeksData.find((w: any) => w.id === `week_${this.selectedWeek}`)
     return wd?.content_ids?.[key] || []
+  }
+
+  /** Fetches the active tab's content from whichever API can resolve it.
+   *  extCourses ids only resolve through the content-partner (cios) search - handing
+   *  them to sunbirdigot returns nothing. Only onTabChange used to make that choice,
+   *  so the initial load and both week selectors always hit the internal search, and
+   *  a week whose content is entirely external rendered an empty grid. This also
+   *  keeps activetabKey in step, which the template uses to pick the card component.
+   */
+  private _fetchActiveTabContent(): void {
+    this.activetabKey = this.contentTypeTabs[this.activeTabIndex]?.key || ''
+    if (this.isActiveExternalTab) {
+      this._fetchExtContent()
+    } else {
+      this._fetchContent()
+    }
   }
 
   _fetchExtContent(): void {
@@ -274,11 +312,23 @@ export class BharatKalpSeeAllComponent implements OnInit {
       })
   }
 
+  /**
+   * Shared by both week selectors: everything that must be re-based when the week changes.
+   *
+   * The tab set differs per week, so selection starts at the first visible tab, and the
+   * status pill goes back to All — a filter carried over from the previous week can hide
+   * every card in the new one, which reads as "no content here" rather than "you have a
+   * filter on". Paging is reset by the fetch itself.
+   */
+  private _applyWeekSelection(week: number): void {
+    this.selectedWeek = week
+    this.activeTabIndex = 0
+    this.selectedStatus = 'All'
+    this._fetchActiveTabContent()
+  }
+
   onWeekChange(event: Event): void {
-    this.selectedWeek = +(event.target as HTMLSelectElement).value
-    this.activeTabIndex = 0 /* tab set can change per week — reset to the first visible tab */
-    this.activetabKey = ''
-    this._fetchContent()
+    this._applyWeekSelection(+(event.target as HTMLSelectElement).value)
   }
 
   onCardContentDataExt(content: any): void {
@@ -292,15 +342,17 @@ export class BharatKalpSeeAllComponent implements OnInit {
     this.activeTabIndex = index
     /* Status pills are hidden for Resources — reset so a stale filter doesn't silently hide all cards */
     if (this.isActiveTabResources) this.selectedStatus = 'All'
-    this.activetabKey = this.contentTypeTabs[this.activeTabIndex]?.key || ''
-    if (this.isActiveExternalTab) {
-      this._fetchExtContent()
-    } else {
-      this._fetchContent()
-    }
+    this._fetchActiveTabContent()
   }
 
-  trackTabKey(_: number, tab: ContentTypeTab): string { return tab.key }
+  /* Week-scoped: contentTypeTabs builds fresh objects on every read, so trackBy is needed to
+     stop the tab views churning each change-detection pass - but tracking by key alone also
+     let a tab (and mat-tab-group's selection on it) survive a week change. */
+  trackTabKey(_: number, tab: ContentTypeTab): string { return `${this.selectedWeek}:${tab.key}` }
+
+  /* Identity of the mat-tab-group wrapper — changing week destroys and recreates the group so
+     it re-reads [selectedIndex] instead of holding the previous week's internal selection. */
+  trackTabGroup(_: number, week: number): number { return week }
 
   onSearch(): void { this.currentPage = 0 }
 
@@ -315,7 +367,10 @@ export class BharatKalpSeeAllComponent implements OnInit {
     /* Status pill filter using enrollment data */
     if (this.selectedStatus !== 'All') {
       cards = cards.filter(c => {
-        const status = this._getStatus(c.content?.identifier)
+        /* Internal content is keyed by identifier, external (cios) content by contentId -
+           the external cards have no identifier at all, so this used to hand _getStatus
+           undefined and every one of them counted as 'Not Started'. */
+        const status = this._getStatus(c.content?.identifier || c.content?.contentId)
         return status === this.selectedStatus
       })
     }
@@ -381,10 +436,8 @@ export class BharatKalpSeeAllComponent implements OnInit {
   toggleWeekDropdown(): void { this.weekDropdownOpen = !this.weekDropdownOpen }
 
   selectWeekOption(week: number): void {
-    this.selectedWeek = week
     this.weekDropdownOpen = false
-    this.activeTabIndex = 0 /* tab set can change per week — reset to the first visible tab */
-    this._fetchContent()
+    this._applyWeekSelection(week)
   }
 
   /** Display label for a week — configured `name` from week data (e.g. "Week 0"), falls back to "Week N" */

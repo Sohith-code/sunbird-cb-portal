@@ -1,6 +1,8 @@
 import {
   Component,
   EventEmitter,
+  HostBinding,
+  HostListener,
   Input,
   OnChanges,
   OnInit,
@@ -16,10 +18,18 @@ import { PageChangeEmitter } from '../../models/search-v3.model'
 })
 export class PaginationComponent implements OnInit, OnChanges {
   private _currentPage: number = 1;
+  private isMobileView = typeof window !== 'undefined' && window.innerWidth < 768;
 
   @Input() defaultPaginationSize: number = 10;
   @Input() defaultPaginationSizeOptions: number[] = [];
   @Input() totalItemsCount: number = 0;
+  @Input() compactMobilePagination = false;
+
+  @HostBinding('class.compact-mobile-pagination')
+  get compactMobilePaginationClass(): boolean {
+    return this.compactMobilePagination
+  }
+
   @Input()
   set currentPage(value: number) {
     if (this._currentPage !== value) {
@@ -43,6 +53,16 @@ export class PaginationComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.paginationInListing()
   }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    const isMobileView = window.innerWidth < 768
+    if (this.isMobileView !== isMobileView) {
+      this.isMobileView = isMobileView
+      this.paginationInListing()
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (
       changes.totalItemsCount && changes.totalItemsCount.previousValue &&
@@ -83,7 +103,7 @@ export class PaginationComponent implements OnInit, OnChanges {
     let upperPagination = this.totalItemsCount && currentIndex ? currentIndex[1] : 0
 
     this.lastPage = paginationLength[paginationLength.length - 1]
-    this.firstPage = paginationLength[0]
+    this.firstPage = this.compactMobilePagination && this.isMobileView ? 1 : paginationLength[0]
 
     this.pagination = {
       dividedPagination: dividedPagination,
@@ -96,6 +116,11 @@ export class PaginationComponent implements OnInit, OnChanges {
   paginationDup(c: any, m: any) {
     let current = c
     let last = m
+
+    if (this.compactMobilePagination && this.isMobileView) {
+      return this.mobilePagination(current, last)
+    }
+
     let delta = 5
     let left = current - delta
     let right = current + delta + 1
@@ -123,7 +148,27 @@ export class PaginationComponent implements OnInit, OnChanges {
     return this.rangeWithDots
   }
 
+  private mobilePagination(current: number, last: number): any[] {
+    const visiblePageCount = 4
+    if (last <= visiblePageCount) {
+      return Array.from({ length: last }, (_value, index) => index + 1)
+    }
+
+    const maximumStart = last - visiblePageCount + 1
+    const start = Math.min(Math.max(1, current <= 3 ? 1 : current - 1), maximumStart)
+    const pages = Array.from({ length: visiblePageCount }, (_value, index) => start + index)
+    const visibleLastPage = pages[pages.length - 1]
+
+    if (visibleLastPage < last) {
+      return [...pages, '...', last]
+    }
+    return pages
+  }
+
   goToPage(page: number) {
+    if (typeof page !== 'number' || !Number.isFinite(page)) {
+      return
+    }
     this.currentPage = page
     this.pageChange.emit({
       currentPage: this.currentPage,

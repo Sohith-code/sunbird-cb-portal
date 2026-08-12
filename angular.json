@@ -76,11 +76,11 @@
               "node_modules/shepherd.js/dist/js/shepherd.min.js",
               "src/js/smartechclient.js"
             ],
-            "aot": false,
+            "aot": true,
             "extractLicenses": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true,
+            "namedChunks": false,
             "allowedCommonJsDependencies": [
               "@ckeditor/ckeditor5-editor-classic"
             ],
@@ -232,7 +232,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "port": 3000,
-            "buildTarget": "fusion:build"
+            "buildTarget": "fusion:build",
+            "prebundle": {
+              "exclude": ["@sunbird-cb/design-system", "@sunbird-cb/consumption"]
+            }
           },
           "configurations": {
             "production": {
@@ -482,7 +485,9 @@
   "cli": {
     "analytics": "0960077c-cd40-4a38-a76c-e63878df5326",
     "cache": {
-      "enabled": false
+      "enabled": true,
+      "environment": "all",
+      "path": ".angular/cache"
     }
   }
 }
