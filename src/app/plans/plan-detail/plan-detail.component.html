@@ -42,6 +42,14 @@
     <!-- ── Right rail ──────────────────────────────────────── -->
     <aside class="plan-detail__rail">
 
+      <!-- Comprehensive assessment: the same card the courses use. CardCourseV2Component
+           draws its own media area for an assessment that has no poster of its own, so this
+           page no longer builds a panel by hand for that case. -->
+      @if (assessment(); as ca) {
+      <sb-uic-card-course-v2 [content]="ca" [assessmentState]="assessmentState()"
+        [config]="assessmentCardConfig"></sb-uic-card-course-v2>
+      }
+
       <!-- Progress on this plan -->
       <section class="plan-panel">
         <h2 class="plan-panel__title">{{ 'planDetail.progressOnPlan' | translate }}</h2>
@@ -92,13 +100,6 @@
         </dl>
       </section>
 
-      <!-- Comprehensive assessment: the same card the courses use. CardCourseV2Component
-           draws its own media area for an assessment that has no poster of its own, so this
-           page no longer builds a panel by hand for that case. -->
-      @if (assessment(); as ca) {
-      <sb-uic-card-course-v2 [content]="ca" [assessmentState]="assessmentState()"
-        [config]="assessmentCardConfig"></sb-uic-card-course-v2>
-      }
     </aside>
   </div>
   }
